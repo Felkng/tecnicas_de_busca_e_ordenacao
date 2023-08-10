@@ -111,7 +111,14 @@ int main(){
     for(int i=0; i<entradas; i++){
         for(int j=0; j<nLinhas; j++){
             for(int k=0; k<nLinhas; k++){
-                arq[i].matrizResultado[j][k] = arq[i].matrizTimes[j][arq[i].matrizMachine[j][k]-1];
+                arq[i].matrizResultado[j][arq[i].matrizMachine[j][k]-1] = arq[i].matrizTimes[j][k];
+            }
+        }
+    }
+
+    for(int i=0; i<entradas; i++){
+        for(int j=0; j<nLinhas; j++){
+            for(int k=0; k<nLinhas; k++){  
                 cout << arq[i].matrizResultado[j][k] << " ";
             }
             cout << endl;
