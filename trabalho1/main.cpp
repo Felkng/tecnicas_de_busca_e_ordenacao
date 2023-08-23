@@ -1,5 +1,6 @@
 #include "listaEstatica.hpp"
 #include "listaLigadaSimples.hpp"
+#include "listaDuplamenteEncadeada.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -31,19 +32,21 @@ void operacoes(){
     cout << "########################################### \n";
 }
 int main(){
-    SimpleList lista(1);
+    HardList lista(1);
     lista.printList();
-    lista.insertPositionValue(4,700);
-    lista.printListInv(lista.getList());
-    cout << endl;
+    lista.printListInv();
+    lista.insertPositionValue(1,900);
+    lista.printList();
+    lista.insertPositionValue(4,1700);
+    lista.printList();
+    lista.insertPositionValue(1800,2);
     lista.printList();
     lista.swapPositions(1,4);
     lista.printList();
-    node* lol = lista.searchValue(700);
-    cout << lol->value << endl;
-    lista.printList();
-    lol = lista.searchLowervalue();
-    cout << lol->value << endl;
-    cout << lista.getSize();
+    no* p;
+    p = lista.searchValue(1700);
+    cout << p->value << endl;
+    p = lista.searchLowervalue();
+    cout << p->value << endl;
     return 0;
 }
