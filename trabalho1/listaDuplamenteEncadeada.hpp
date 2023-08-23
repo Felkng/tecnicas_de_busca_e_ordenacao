@@ -24,6 +24,7 @@ class HardList{ //cria no cabeça
         no** list;
     public:
         HardList(int decision){
+            list = new no*();
             if(decision==1){
                 cout << "Informe o nome do arquivo: " << endl;
                 string archive;

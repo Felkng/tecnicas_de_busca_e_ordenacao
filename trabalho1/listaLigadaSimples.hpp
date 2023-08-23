@@ -23,6 +23,7 @@ class SimpleList{
         node** list;
     public:
         SimpleList(int decision){
+            list = new node*();
             if(decision==1){
                 cout << "Informe o nome do arquivo: " << endl;
                 string archive;

@@ -1,12 +1,4 @@
-#include "listaEstatica.hpp"
-#include "listaLigadaSimples.hpp"
-#include "listaDuplamenteEncadeada.hpp"
-#include <iostream>
-#include <fstream>
-
-using namespace std;
-int main(){
-    //LISTA LIGADA SIMPLES
+//LISTA LIGADA SIMPLES
     //========================================
     //Arquivo
     node* aux;
@@ -34,5 +26,3 @@ int main(){
     cout << aux->next->value << endl;
     aux = lista_sim_ale.searchLowervalue();
     cout << aux->next->value << endl;
-    return 0;
-}

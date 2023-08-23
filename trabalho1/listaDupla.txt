@@ -1,0 +1,28 @@
+//LISTA LIGADA DUPLA
+    //========================================
+    //Arquivo
+    no* aux;
+    HardList lista_dup_arq(1);
+    lista_dup_arq.printList();
+    lista_dup_arq.insertPositionValue(2,1000);
+    lista_dup_arq.printListInv();
+    cout << endl;
+    lista_dup_arq.swapPositions(2,5);
+    lista_dup_arq.printList();
+    aux = lista_dup_arq.searchValue(1000);
+    cout << aux->next->value << endl;
+    aux = lista_dup_arq.searchLowervalue();
+    cout << aux->next->value << endl;
+    //===============================================
+    //Aleatória
+    HardList lista_dup_ale(2);
+    lista_dup_ale.printList();
+    lista_dup_ale.insertPositionValue(2,1000);
+    lista_dup_ale.printListInv();
+    cout << endl;
+    lista_dup_ale.swapPositions(2,5);
+    lista_dup_ale.printList();
+    aux = lista_dup_ale.searchValue(1000);
+    cout << aux->next->value << endl;
+    aux = lista_dup_ale.searchLowervalue();
+    cout << aux->next->value << endl;
