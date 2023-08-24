@@ -55,11 +55,14 @@ class SimpleList{
             (*list) = NULL;
             vector<int> list_aux;
             list_aux.resize(size);
-            for(unsigned i=0; i<size; i++){
-                if (!(inputFile >> list_aux[i])) {
-                    cerr << "Failed to read data element from input file." << endl;
-                    return;
+            int ct = 0;
+            for(unsigned i=0; inputFile; i++){
+                ct++;
+                if(ct > size){
+                    cout << "Tamanho da lista excedido.\n";
+                    break;
                 }
+                (inputFile >> list_aux[i]);
             }
             for(int i = size-1; i>=0; i--)
                 insertList(list_aux[i]);
@@ -99,6 +102,10 @@ class SimpleList{
         }
 
         node* insertPositionValue(int pos, int val){
+            if(pos > size){
+                cerr << "Não existe essa posição\n";
+                return NULL;
+            }
             node* aux = (*list);
             if(pos == 1){
                 insertList(val);

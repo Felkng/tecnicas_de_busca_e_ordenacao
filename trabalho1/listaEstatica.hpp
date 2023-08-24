@@ -50,12 +50,14 @@ public:
         }      
 
         dynamicArray.resize(size);
-
-        for (int i = 0; i < size; ++i) {
-            if (!(inputFile >> dynamicArray[i])) {
-                cerr << "Failed to read data element from input file." << endl;
-                return;
-            }
+        int ct = 0;
+        for (int i = 0; inputFile; ++i) {
+            ct++;
+                if(ct > size){
+                    cout << "Tamanho da lista excedido.\n";
+                    break;
+                }
+                inputFile >> dynamicArray[i];
         }
 
     }
@@ -85,6 +87,10 @@ public:
     }
 
     void positionInsertion(unsigned pos, int value){
+        if(pos > size){
+                cerr << "Não existe essa posição\n";
+                return;
+        }
         dynamicArray.resize(size+1);
         size++;
         for(unsigned i = size - 1; i>pos; i--){
@@ -102,11 +108,11 @@ public:
         unsigned i=0;
         for(; i < size; i++){
             if(dynamicArray[i] == value){
-                cout << "Numero de acessos: " << i << endl;
+                cout << "Numero de acessos: " << i+1 << endl;
                 return i;
             }
         }
-        cout << "Numero de acessos: " << i << endl;
+        cout << "Numero de acessos: " << i+1 << endl;
         return -1;
     }
 
@@ -120,7 +126,7 @@ public:
                 lower = dynamicArray[i];
             }
         }
-        cout << "Numero de acessos: " << i << endl;
+        cout << "Numero de acessos: " << i+1 << endl;
         cout << "Menor valor: " << lower << endl;
         return pos;
     }
