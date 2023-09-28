@@ -7,8 +7,10 @@ using namespace std;
 
 void generateRandomArray(int size, int begin, int finish, vector<int> &x) {
         x.resize(size);
-        // unsigned seed = static_cast<unsigned>(chrono::system_clock::now().time_since_epoch().count());
-        unsigned seed = 28394843;
+        //seed aleatória:
+        unsigned seed = static_cast<unsigned>(chrono::system_clock::now().time_since_epoch().count());
+        //seed fixa:
+        // unsigned seed = 28394843;
         default_random_engine generator(seed);
         uniform_int_distribution<int> distribution(begin, finish);
         for (int i = 0; i < size; ++i) {
