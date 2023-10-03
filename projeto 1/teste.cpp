@@ -7,93 +7,151 @@
 #include <regex>
 #include <iterator>
 
+using namespace std;
+
 struct Movie {
-    std::string tconst;
-    std::string titleType;
-    std::string primaryTitle;
-    std::string originalTitle;
+    string tconst;
+    string titleType;
+    string primaryTitle;
+    string originalTitle;
     bool isAdult;
     int startYear;
     int endYear;
     int duration;
-    std::string genres;
+    string genres;
 };
 
+
 // Function to index the table by a specific column
-std::unordered_map<std::string, std::vector<Movie>> indexByColumn(const std::vector<Movie>& table, const std::string& columnName) {
-    std::unordered_map<std::string, std::vector<Movie>> index;
+// unordered_map<string, vector<Movie>> indexByColumn(const vector<Movie>& table, const string& columnName) {
+//     unordered_map<string, vector<Movie>> index;
 
-    for (const Movie& movie : table) {
-        if (columnName == "short") {
-            index[movie.tconst].push_back(movie);
-        }
-        // Add more conditions for other columns as needed
-    }
+//     for (const Movie& movie : table) {
+//         if (columnName == "short") {
+//             index[movie.tconst].push_back(movie);
+//         }
+//         // Add more conditions for other columns as needed
+//     }
 
-    return index;
-}
+//     return index;
+// }
 
 // Function to perform a search based on an indexed column
-std::vector<Movie> searchByColumn(const std::unordered_map<std::string, std::vector<Movie>>& index, const std::string& searchTerm) {
-    auto it = index.find(searchTerm);
-    if (it != index.end()) {
-        return it->second;
+// vector<Movie> searchByColumn(const unordered_map<string, vector<Movie>>& index, const string& searchTerm) {
+//     auto it = index.find(searchTerm);
+//     if (it != index.end()) {
+//         return it->second;
+//     }
+//     return {}; // Return an empty vector if not found
+// }
+
+pair<string, string> splitString(const string& input) {
+    // Encontrar a posição do primeiro caractere de nova linha
+    size_t pos = input.find('\n');
+
+    // Se não encontrar '\n', retorna a string original e uma string vazia
+    if (pos == string::npos) {
+        return make_pair(input, "");
     }
-    return {}; // Return an empty vector if not found
+
+    // Extrair a substring antes do '\n'
+    string part1 = input.substr(0, pos);
+
+    // Extrair a substring após o '\n'
+    string part2 = input.substr(pos + 1);
+
+    // Retornar as duas partes em um par de strings
+    return make_pair(part1, part2);
 }
 
 int main() {
-    std::vector<Movie> movieTable;
-    std::string fileName = "teste2.txt"; // Change to your file name
+    vector<Movie> movieTable;
+    string fileName = "filmesCrop.txt"; // Change to your file name
 
     // Read data from the text file and populate the movieTable vector
-    std::ifstream file(fileName);
+    ifstream file(fileName);
     if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << fileName << std::endl;
+        cerr << "Failed to open file: " << fileName << endl;
         return 1;
     }
 
-    std::string line;
+    string line;
 
-    std::getline(file,line);
-    int i = 1;
-    while (std::getline(file, line)) {
-        std::regex whiteSpace(" ");
-        std::regex barraN("\\\\N");
-        std::regex igualin("=");
-        
-        // write the results to an output iterator
-        line = std::regex_replace(line, whiteSpace, "=");
-        line = std::regex_replace(line, barraN, "-1");
-
-        std::istringstream iss(line);
-
-        Movie movie;
-        if((iss >> movie.tconst >> movie.titleType >> movie.primaryTitle >> movie.originalTitle >> movie.isAdult >>  movie.startYear >> movie.endYear >> movie.duration >> movie.genres)){
-            movie.primaryTitle = std::regex_replace(movie.primaryTitle, igualin, " ");
-            movie.originalTitle = std::regex_replace(movie.originalTitle, igualin, " ");
-            movieTable.push_back(movie);
-        } else {
-            std::cerr << "Failed to parse line: " << line << i << std::endl;
-
+    getline(file,line);
+    int i = 0;
+    int ct = 0;
+    Movie movie;
+    vector<string> content;
+    // istringstream iss;
+    while(getline(file,line,'\t')){
+        if(i%8==0){
+            // cout << "linha: " << line << endl;
+            pair<string,string> separator = splitString(line);
+            // cout << "separador 1: " << separator.first << endl;
+            // cout << "separador 2: " << separator.second << endl;
+            content.push_back(separator.first);
+            if(separator.second != "")
+                content.push_back(separator.second);
+        }else{
+            content.push_back(line);
         }
-    }
+        i++;
 
+        // // iss.str("");
+        // // iss.clear();
+        // // iss.str(line);
+        // istringstream iss(line);
+        // // iss >> movie.tconst >> movie.titleType >> movie.primaryTitle >> movie.originalTitle >> movie.isAdult >> movie.startYear >> movie.endYear >> movie.duration >> movie.genres;
+        // // movieTable.push_back(movie);
+    }
+    // while (getline(file, line)) {
+    //     regex whiteSpace(" ");
+    //     regex barraN("\\\\N");
+    //     regex igualin("=");
+        
+    //     // write the results to an output iterator
+    //     line = regex_replace(line, whiteSpace, "=");
+    //     line = regex_replace(line, barraN, "-1");
+    //     // iss.getline(line);
+    //     // iss(line);
+
+    //     if((iss >> movie.tconst >> movie.titleType >> movie.primaryTitle >> movie.originalTitle >> movie.isAdult >>  movie.startYear >> movie.endYear >> movie.duration >> movie.genres)){
+    //         movie.primaryTitle = regex_replace(movie.primaryTitle, igualin, " ");
+    //         movie.originalTitle = regex_replace(movie.originalTitle, igualin, " ");
+    //         movieTable.push_back(movie);
+    //     } else {
+    //         cerr << "Failed to parse line: " << line << i << endl;
+
+    //     }
+    // }
     file.close();
-
-    std::string columnName = "short";
-    std::string searchTerm = "Drama";
-
-    // Index the table by the specified column
-    std::unordered_map<std::string, std::vector<Movie>> index = indexByColumn(movieTable, columnName);
-
-    // Perform a search using the index
-    std::vector<Movie> searchResults = searchByColumn(index, searchTerm);
-    
-    // Print the search results
-    for (const Movie& result : searchResults) {
-        std::cout << result.tconst << " | " << result.titleType << " | " << result.primaryTitle << std::endl;
+    for(int i=0;i<content.size();i++){
+        cout << i << ": " << content[i] << endl;
+        // if(i%9==0){
+        //     movie.tconst = content[i];
+        //     movieTable.push_back(movie);
+        // }
     }
+    // for(auto x: movieTable){
+    //     cout << x.tconst << endl;
+    // }
+    // cout << movieTable.size() << endl;
+    // cout << ct << endl;
+    // cout << "OK";
+
+    // string columnName = "short";
+    // string searchTerm = "Drama";
+
+    // // Index the table by the specified column
+    // unordered_map<string, vector<Movie>> index = indexByColumn(movieTable, columnName);
+
+    // // Perform a search using the index
+    // vector<Movie> searchResults = searchByColumn(index, searchTerm);
+    
+    // // Print the search results
+    // for (const Movie& result : searchResults) {
+    //     cout << result.tconst << " | " << result.titleType << " | " << result.primaryTitle << endl;
+    // }
 
 
     return 0;
