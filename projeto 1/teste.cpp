@@ -1,4 +1,6 @@
 #include <iostream>
+#include <stdlib.h>
+#include <bits/stdc++.h>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -22,28 +24,6 @@ struct Movie {
 };
 
 
-// Function to index the table by a specific column
-// unordered_map<string, vector<Movie>> indexByColumn(const vector<Movie>& table, const string& columnName) {
-//     unordered_map<string, vector<Movie>> index;
-
-//     for (const Movie& movie : table) {
-//         if (columnName == "short") {
-//             index[movie.tconst].push_back(movie);
-//         }
-//         // Add more conditions for other columns as needed
-//     }
-
-//     return index;
-// }
-
-// Function to perform a search based on an indexed column
-// vector<Movie> searchByColumn(const unordered_map<string, vector<Movie>>& index, const string& searchTerm) {
-//     auto it = index.find(searchTerm);
-//     if (it != index.end()) {
-//         return it->second;
-//     }
-//     return {}; // Return an empty vector if not found
-// }
 
 pair<string, string> splitString(const string& input) {
     // Encontrar a posição do primeiro caractere de nova linha
@@ -124,35 +104,64 @@ int main() {
 
     //     }
     // }
+    // map<string,string> title_types;
     file.close();
-    for(int i=0;i<content.size();i++){
-        cout << i << ": " << content[i] << endl;
-        // if(i%9==0){
-        //     movie.tconst = content[i];
-        //     movieTable.push_back(movie);
-        // }
+    map<string,set<string>> title_types_map;
+    map<string,set<string>> genres_map;
+    map<int,set<string>> startYear_map;
+    for(int i=0;i<content.size();i+=9){
+        movie.tconst = content[i];
+        movie.titleType = content[i+1];
+        movie.primaryTitle = content[i+2];
+        movie.originalTitle = content[i+3];
+        if(content[i+4] == "\\N")
+            content[i+4] = "0";
+        movie.isAdult = stoi(content[i+4]);
+        if(content[i+5] == "\\N")
+            content[i+5] = "-1";
+        movie.startYear = stoi(content[i+5]);
+        if(content[i+6] == "\\N")
+            content[i+6] = "-1";
+        movie.endYear = stoi(content[i+6]);
+        if(content[i+7] == "\\N")
+            content[i+7] = "-1";
+        movie.duration = stoi(content[i+7]);
+        movie.genres = content[i+8];
+        title_types_map[movie.titleType].insert(movie.tconst);
+        genres_map[movie.genres].insert(movie.tconst);
+        startYear_map[movie.startYear].insert(movie.tconst);
+        movieTable.push_back(movie);
     }
-    // for(auto x: movieTable){
-    //     cout << x.tconst << endl;
-    // }
-    // cout << movieTable.size() << endl;
-    // cout << ct << endl;
-    // cout << "OK";
+    content.clear();
 
-    // string columnName = "short";
-    // string searchTerm = "Drama";
+    // set<string> title_types_map_union;
+    // set<string> genres_map_union;
 
-    // // Index the table by the specified column
-    // unordered_map<string, vector<Movie>> index = indexByColumn(movieTable, columnName);
+    // for (const auto& entry : title_types_map) {
+    //         cout << entry.first << ": ";
+            
+    //         // Print each element in the vector
+    //         for (const auto& value : entry.second) {
+    //             cout << value << " ";
+    //         }
 
-    // // Perform a search using the index
-    // vector<Movie> searchResults = searchByColumn(index, searchTerm);
-    
-    // // Print the search results
-    // for (const Movie& result : searchResults) {
-    //     cout << result.tconst << " | " << result.titleType << " | " << result.primaryTitle << endl;
+    //         cout << endl;
     // }
 
+    set<string> intersection;
+    // Use set_intersection to find the common elements
+    set_intersection(
+        title_types_map["short"].begin(), title_types_map["short"].end(),
+        genres_map["Drama,History,Short"].begin(), genres_map["Drama,History,Short"].end(),
+        inserter(intersection, intersection.begin())
+    );
+
+    // Print the intersection
+    cout << "Intersection: ";
+    for (string value : intersection) {
+        cout << value << " ";
+    }
+    cout << endl;
 
     return 0;
 }
