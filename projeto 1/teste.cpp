@@ -23,8 +23,6 @@ struct Movie {
     string genres;
 };
 
-
-
 pair<string, string> splitString(const string& input) {
     // Encontrar a posição do primeiro caractere de nova linha
     size_t pos = input.find('\n');
@@ -42,6 +40,81 @@ pair<string, string> splitString(const string& input) {
 
     // Retornar as duas partes em um par de strings
     return make_pair(part1, part2);
+}
+
+int binarySearchMovie(const vector<Movie> &arr, int l, int r, string dataToFind, int whatType){
+    //whatType == 1 } primaryTitle
+    //whatType == 2 } genres
+    //whatType == 3 } startYear
+    int result = -1; //garantir que sempre retorne a primeira aparição no vetor
+    while (l <= r) {
+        int m = l + (r - l) / 2;
+        switch(whatType){
+            case 1: 
+                if (arr[m].titleType == dataToFind){
+                    result = m;
+                    r = m - 1;
+                }
+                else if (arr[m].titleType < dataToFind)
+                    l = m + 1;
+                else
+                    r = m - 1;
+            break;
+            case 2:
+                if (arr[m].genres == dataToFind){
+                    result = m;
+                    r = m - 1;
+                }
+                else if (arr[m].genres < dataToFind)
+                    l = m + 1;
+                else
+                    r = m - 1;
+            break;
+            case 3:
+                if (arr[m].startYear == stoi(dataToFind)){
+                    result = m;
+                    r = m - 1;
+                }
+                if (arr[m].startYear < stoi(dataToFind))
+                    l = m + 1;
+                else
+                    r = m - 1;
+            break;
+            default:
+                return -1;
+        }
+    }
+    return result;
+}
+
+void splitVectorMovie(string dataToParse, vector<Movie> &vectorToParse, vector<Movie> &vectorResult, int dataType){
+    //whatType == 1 } primaryTitle
+    //whatType == 2 } genres
+    //whatType == 3 } startYear
+    // Encontrar a primeira ocorrência usando BS
+    int first = binarySearchMovie(vectorToParse,0,vectorToParse.size()-1,dataToParse, dataType);
+    for(int i=first; i < vectorToParse.size(); i++){
+        if(dataType == 1 && vectorToParse[i].titleType == dataToParse)
+            vectorResult.push_back(vectorToParse[i]);
+        else if(dataType == 2 && vectorToParse[i].genres == dataToParse)
+            vectorResult.push_back(vectorToParse[i]);
+        else if(dataType == 3 && vectorToParse[i].startYear == stoi(dataToParse))
+            vectorResult.push_back(vectorToParse[i]);
+        else 
+            return;
+    }
+}
+
+bool compareTitleType(const Movie &a, const Movie &b){
+    return a.titleType < b.titleType;
+}
+
+bool compareGenres(const Movie &a, const Movie &b){
+    return a.genres < b.genres;
+}
+
+bool compareStartYear(const Movie &a, const Movie &b){
+    return a.startYear < b.startYear;
 }
 
 int main() {
@@ -77,13 +150,16 @@ int main() {
     }
 
     file.close();
-    vector<string>TitleType;
-    vector<string> genres;
-    vector<int> startYear;
+
+    pair<string, vector<Movie>> TitleType;
+    pair<string, vector<Movie>> genres;
+    pair<int, vector<Movie>> startYear;
+
     for(int i=0;i<396;i+=9){
         movie.tconst = content[i];
         movie.titleType = content[i+1];
-        TitleType.push_back(movie.titleType);
+        TitleType.second.push_back(movie);
+        // TitleType.push_back(movie.titleType);
         movie.primaryTitle = content[i+2];
         movie.originalTitle = content[i+3];
         if(content[i+4] == "\\N")
@@ -92,7 +168,8 @@ int main() {
         if(content[i+5] == "\\N")
             content[i+5] = "-1";
         movie.startYear = stoi(content[i+5]);
-        startYear.push_back(movie.startYear);
+        startYear.second.push_back(movie);
+        // startYear.push_back(movie.startYear);
         if(content[i+6] == "\\N")
             content[i+6] = "-1";
         movie.endYear = stoi(content[i+6]);
@@ -100,28 +177,23 @@ int main() {
             content[i+7] = "-1";
         movie.duration = stoi(content[i+7]);
         movie.genres = content[i+8];
-        genres.push_back(movie.genres);
+        genres.second.push_back(movie);
+        // genres.push_back(movie.genres);
         movieTable.push_back(movie);
     }
     content.clear();
-    sort(TitleType.begin(), TitleType.end());
-    sort(genres.begin(), genres.end());
-    sort(startYear.begin(), startYear.end());
-    string val = "short";
 
-    // Encontrar a primeira ocorrência usando find
-    auto first = find(TitleType.begin(), TitleType.end(), val);
-    auto primeiro = distance(TitleType.begin(), first);
+    sort(TitleType.second.begin(), TitleType.second.end(),compareTitleType);
+    sort(genres.second.begin(), genres.second.end(), compareGenres);
+    sort(startYear.second.begin(), startYear.second.end(), compareStartYear);
+    string val = "Comedy";
 
-    // Encontrar a última ocorrência usando find_end
-    vector <string> a;
-    a.push_back(val);
-    auto end = find_end(TitleType.begin(), TitleType.end(), a.begin(), a.end());
-    auto fim = distance(TitleType.begin(), end);
+    vector<Movie> res;
+    splitVectorMovie(val,genres.second,res,2);
 
-    // Imprimir os resultados
-    cout << "Primeira ocorrência de '" << val << "' encontrada no índice " << primeiro << endl;
-    cout << "Última ocorrência de '" << val << "' encontrada no índice " << fim << endl;
+    for(auto a: res){
+        cout << a.genres << " " << a.tconst << " ";
+    }
 
     cout << endl;
 
