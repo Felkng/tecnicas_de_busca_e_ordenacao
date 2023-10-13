@@ -204,7 +204,7 @@ void movieConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
 }
 
 //Imprime a interseção, se houver, dos filmes procurados
-void printResult(vector<Movie> finalRes, vector<vector<Movie>> resultado, string input){
+void printResult(vector<Movie> finalRes, vector<vector<Movie>> &resultado, string input){
     int ctVerify=0;
     if(input.find("1") != input.npos){
         intercesectionLinearMovie(resultado[0], resultado[0], finalRes);
@@ -314,7 +314,7 @@ int main() {
      vector<Movie> startYear;
      vector<Movie> runTime;
 
-    for(int i=0;i<396;i+=9){
+    for(int i=0;i<content.size();i+=9){
         movie.tconst = content[i];
         movie.titleType = content[i+1];
         // TitleType.push_back(movie.titleType);
