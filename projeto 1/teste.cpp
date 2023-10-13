@@ -43,71 +43,6 @@ pair<string, string> splitString(const string& input) {
     return make_pair(part1, part2);
 }
 
-//busca a primeira ocorrencia dos dados inseridos
-int binarySearchMovie(const vector<Movie> &arr, int l, int r, string dataToFind, int whatType){
-    //whatType == 1 } titleType
-    //whatType == 2 } genres
-    //whatType == 3 } startYear
-    int result = -1; //garantir que sempre retorne a primeira aparição no vetor
-    while (l <= r) {
-        int m = l + (r - l) / 2;
-        switch(whatType){
-            case 1: 
-                if (arr[m].titleType == dataToFind){
-                    result = m;
-                    r = m - 1;
-                }
-                else if (arr[m].titleType < dataToFind)
-                    l = m + 1;
-                else
-                    r = m - 1;
-            break;
-            case 2:
-                if (arr[m].genres == dataToFind){
-                    result = m;
-                    r = m - 1;
-                }
-                else if (arr[m].genres < dataToFind)
-                    l = m + 1;
-                else
-                    r = m - 1;
-            break;
-            case 3:
-                if (arr[m].startYear == stoi(dataToFind)){
-                    result = m;
-                    r = m - 1;
-                }
-                if (arr[m].startYear < stoi(dataToFind))
-                    l = m + 1;
-                else
-                    r = m - 1;
-            break;
-            default:
-                return -1;
-        }
-    }
-    return result;
-}
-
-//Cria um vetor resultado filtrado pela entrada a partir do dado inserido 
-void parserVectorMovie(string dataToParse, vector<Movie> &vectorToParse, vector<Movie> &vectorResult, int dataType){
-    //whatType == 1 } titleType
-    //whatType == 2 } genres
-    //whatType == 3 } startYear
-    // Encontrar a primeira ocorrência usando BS
-    int first = binarySearchMovie(vectorToParse,0,vectorToParse.size()-1,dataToParse, dataType);
-    for(int i=first; i < vectorToParse.size(); i++){
-        if(dataType == 1 && vectorToParse[i].titleType == dataToParse)
-            vectorResult.push_back(vectorToParse[i]);
-        else if(dataType == 2 && vectorToParse[i].genres == dataToParse)
-            vectorResult.push_back(vectorToParse[i]);
-        else if(dataType == 3 && vectorToParse[i].startYear == stoi(dataToParse))
-            vectorResult.push_back(vectorToParse[i]);
-        else 
-            return;
-    }
-}
-
 //função para usar de parâmetro na ordenação de titleTypes
 bool compareTitleType(const Movie &a, const Movie &b){
     return a.titleType < b.titleType;
@@ -124,8 +59,14 @@ bool compareStartYear(const Movie &a, const Movie &b){
 bool compareIds(const Movie &a, const Movie &b){
     return a.tconst < b.tconst;
 }
+//função para usar de parâmetro na ordenação de runTime
+bool compareRunTime(const Movie &a, const Movie &b){
+    return a.duration < b.duration;
+}
 
-void intercesectionLinearMovie(const vector<Movie> &a, const vector<Movie> &b, vector<Movie> &res){
+//função que faz a interseção entre 2 conjuntos de forma linear
+void intercesectionLinearMovie(vector<Movie> a, vector<Movie> b, vector<Movie> &res){
+    res.clear();
     for(int i=0, j=0; i < a.size() && j < b.size() ; ){
         if(a[i].tconst == b[j].tconst){
             res.push_back(a[i]);
@@ -139,69 +80,166 @@ void intercesectionLinearMovie(const vector<Movie> &a, const vector<Movie> &b, v
     }
 }
 
-
-// parserVectorMovie("tvEpisode",TitleType.second,resTitleType,1);
-// sort(resTitleType.begin(), resTitleType.end(), compareIds);
-// parserVectorMovie("Comedy",genres.second,resGenres,2);
-// sort(resGenres.begin(), resGenres.end(), compareIds);
-// parserVectorMovie("2017",startYear.second,resStartYear,3);
-// sort(resStartYear.begin(), resStartYear.end(), compareIds);
-
-void moviesConsult(vector<Movie> &titleType, vector<Movie> &genres, vector<Movie> &startYear, vector<Movie> &resTitleType, vector<Movie> &resGenres, vector<Movie> &resStartYear, string consultas){
-    cout << "\n---" << consultas << "---" << endl;
-    if(consultas.find("1") != consultas.npos){
-        string valueTitleType;
-        cout << "Qual TitleType deseja procurar? \n";
-        cin >> valueTitleType;
-        parserVectorMovie(valueTitleType,titleType,resTitleType,1);
-        sort(resTitleType.begin(),resTitleType.end(),compareIds);
+//binarySearchDeMovies
+int binarySearch(const vector<pair<string,vector<Movie>>> & arr, string target, int left, int right) {
+    if (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid].first == target) {
+            return mid;
+        } else if (arr[mid].first < target) {
+            return binarySearch(arr, target, mid + 1, right);
+        } else {
+            return binarySearch(arr, target, left, mid - 1);
+        }
     }
-    if(consultas.find("2") != consultas.npos){
-        string valueGenres;
-        cout << "Qual Genres deseja procurar? \n";
-        cin >> valueGenres;
-        parserVectorMovie(valueGenres,genres,resGenres,2);
-        sort(resGenres.begin(),resGenres.end(),compareIds);
-    }
-    if(consultas.find("3") != consultas.npos){
-        string valueStartYear;
-        cout << "Qual StartYear deseja procurar? \n";
-        cin >> valueStartYear;
-        parserVectorMovie(valueStartYear,startYear,resStartYear,3);
-        sort(resStartYear.begin(),resStartYear.end(),compareIds);
-    }
-    //if(consultas.find("4")){}
+    return -1;
 }
 
-void printResult(vector<Movie> &resTitleType, vector<Movie> &resGenres, vector<Movie> &resStartYear,vector<Movie> &resultado){
-    vector<Movie> intersector;
-
-    if(!resTitleType.empty() && !resStartYear.empty() && !resGenres.empty()){
-        intercesectionLinearMovie(resTitleType,resStartYear,intersector);
-        intercesectionLinearMovie(resGenres,intersector,resultado);
-    }else if(!resTitleType.empty() && !resStartYear.empty()){
-        intercesectionLinearMovie(resTitleType,resStartYear,resultado);
-    }else if(!resTitleType.empty() && !resGenres.empty()){
-        intercesectionLinearMovie(resTitleType,resGenres,resultado);
-    }else if(!resGenres.empty() && !resStartYear.empty()){
-        intercesectionLinearMovie(resGenres,resStartYear,resultado);
-    }else{
-        intercesectionLinearMovie(resTitleType,resTitleType,resultado);
-        if(!resultado.empty())
-            intercesectionLinearMovie(resGenres,resGenres,resultado);
-        if(!resultado.empty())
-            intercesectionLinearMovie(resStartYear,resStartYear,resultado);
-
+//Faz a uinião dos filmes em uma mesma coluna
+void unionMovies(vector<pair<string,vector<Movie>>> &movieParser, vector<Movie> &result, int pos){
+    for(int i=0; i<movieParser[pos].second.size();i++){
+        result.push_back(movieParser[pos].second[i]);
     }
+}
 
-    for(auto x : resultado){
-        cout << "tconst: " << x.tconst << " OriginalTitle: " << x.originalTitle << " StartYear: " << x.startYear  << " TitleType: " << x.titleType << " Genres: " << x.genres << "\n";
+//Faz a consulta aos filmes de 1 ou mais colunas ao mesmo tempo
+void movieConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<vector<Movie>> &result, string input){
+    cout << "\n---" << input << "---" << endl;
+    if(input.find("1") != input.npos){
+        int choice=1;
+        int pos=0;
+        string valueTitleType;
+        for(int i=0;;i++){
+            if(choice == 1){
+                cout << "\n\nQual/quais TitleType deseja procurar? \n";
+                cin >> valueTitleType;
+                pos = binarySearch(movieParser[0],valueTitleType,0,movieParser[0].size()-1);
+                if(pos != -1)
+                    unionMovies(movieParser[0],result[0],pos);
+            }else{
+                break;
+            }
+            cout << "\n\nMais outro?\n\n";
+            cout << "1 - SIM\n\n2 - NÃO\n\n";
+            cin >> choice;
+        }
+        // parserVectorMovie(valueTitleType,titleType,resTitleType,1, especify);
+        sort(result[0].begin(),result[0].end(),compareIds);
     }
+    if(input.find("2") != input.npos){
+        int choice=1;
+        int pos=0;
+        string valueGenres;
+        for(int i=0;;i++){
+            if(choice == 1){
+                cout << "\n\nQual/quais Gênero deseja procurar? \n";
+                cin >> valueGenres;
+                pos = binarySearch(movieParser[1],valueGenres,0,movieParser[1].size()-1);
+                if(pos != -1)
+                    unionMovies(movieParser[1],result[1],pos);
+            }else{
+                break;
+            }
+            cout << "\n\nMais outro?\n\n";
+            cout << "1 - SIM\n\n2 - NÃO\n\n";
+            cin >> choice;
+        }
+        // parserVectorMovie(valueGenres,genres,resGenres,2, especify);
+        sort(result[1].begin(),result[1].end(),compareIds);
+    }
+    if(input.find("3") != input.npos){
+        string valueStartYear, valueEndYear;
+        int choice, pos;
+        cout << "\n\nDeseja procurar por um ano específico ou entre um intervalo de tempo?\n\n";
+        cout << "1 - Ano específico\n2 - Intervalo\n\n";
+        cin >> choice;
+        if(choice == 1){
+            cout << "\n\nQual ano?\n\n";
+            cin >> valueStartYear;
+            pos = binarySearch(movieParser[2],valueStartYear,0,movieParser[2].size()-1);
+            if(pos != -1)
+                unionMovies(movieParser[2],result[2],pos);
+            // parserVectorMovie(valueStartYear,startYear,resStartYear,3,especify);
+            sort(result[2].begin(),result[2].end(),compareIds);
+        }else{
+            cout << "\n\nAno de lançamento: \n\n";
+            cin >> valueStartYear;
+            cout << "\n\nAno de término:\n\n";
+            cin >> valueEndYear;
+            int finalPos;
+            // pos = binarySearch(movieParser[2],valueStartYear,0,movieParser[2].size()-1);
+            for(int i=0, j=0; j < movieParser[2].size(); j++){
+                if(movieParser[2][i].first >= valueStartYear){
+                    pos=i;
+                }else{
+                    i++;
+                }
+                if(movieParser[2][i].first <= valueEndYear){
+                    finalPos = j;
+                }else{
+                    break;
+                }
+            }
+            // finalPos = binarySearch(movieParser[2],valueEndYear,0,movieParser[2].size()-1);
+            cout << "------ " << pos << "---------" << finalPos;
+            for(int i=pos; i<finalPos; i++){
+                if(i != -1)
+                    unionMovies(movieParser[2],result[2],i);
+            }
+            // especify = valueEndYear;
+            // parserVectorMovie(valueStartYear,startYear,resStartYear,3,especify);
+            sort(result[2].begin(),result[2].end(),compareIds);
+        }
+    }
+    if(input.find("4") != input.npos){
+        string valueRunTime;
+        int pos;
+        cout << "\n\nQual intervalo de tempo de duração você procura? \n";
+        cin >> valueRunTime;
+        pos = binarySearch(movieParser[3],valueRunTime,0,movieParser[3].size()-1);
+        unionMovies(movieParser[3],result[3],pos);
+        // parserVectorMovie(valueRunTime,runTime,resRunTime,4,especify);
+        sort(result[3].begin(),result[3].end(),compareIds);
+    }
+}
 
+//Imprime a interseção, se houver, dos filmes procurados
+void printResult(vector<Movie> finalRes, vector<vector<Movie>> resultado, string input){
+    int ctVerify=0;
+    if(input.find("1") != input.npos){
+        intercesectionLinearMovie(resultado[0], resultado[0], finalRes);
+        ctVerify++;
+    }
+    if(input.find("2") != input.npos){
+        if(ctVerify == 0){
+            intercesectionLinearMovie(resultado[1], resultado[1], finalRes);
+            ctVerify++;
+        }
+        intercesectionLinearMovie(finalRes, resultado[1], finalRes);
+    }
+    if(input.find("3") != input.npos){
+        if(ctVerify == 0){
+            intercesectionLinearMovie(resultado[2],resultado[2],finalRes);
+            ctVerify++;
+        }
+        intercesectionLinearMovie(finalRes,resultado[2],finalRes);
+    }
+    if(input.find("4") != input.npos){
+        if(ctVerify == 0){
+            intercesectionLinearMovie(resultado[3],resultado[3],finalRes);
+            ctVerify++;
+        }
+        intercesectionLinearMovie(finalRes,resultado[3],finalRes);
+    }
+    cout << "\n\n";
+    for(auto x : finalRes){
+        cout << "tconst: " << x.tconst << " OriginalTitle: " << x.originalTitle << " StartYear: " << x.startYear << " endYear: " << x.endYear  << " TitleType: " << x.titleType << " Genres: " << x.genres << " Duração: " << x.duration <<"\n";
+    }
     cout << endl;
-    resTitleType.clear();
-    resGenres.clear();
-    resStartYear.clear();
+    resultado[0].clear();
+    resultado[1].clear();
+    resultado[2].clear();
+    resultado[3].clear();
 }
 
 void menu(){
@@ -217,7 +255,7 @@ void menuFilmes(){
     system("clear");
     cout << "********************************************\n\n";
     cout << "Quais filtros deseja utilizar?\n\n";
-    cout << "1 - TitleType\n2 - Genres\n3 - StartYear\n\n";
+    cout << "1 - Tipo de filme\n2 - Gênero\n3 - Ano\n4 - Duração\n\n";
     cout << "********************************************\n\n";
 }
 
@@ -226,7 +264,7 @@ void menuMoreOneMovie(){
     cout << "********************************************\n\n";
     cout << "Mais algum? Qual?\n\n";
     cout << "0 - NÃO\n";
-    cout << "1 - TitleType\n2 - Genres\n3 - StartYear\n\n";
+    cout << "1 - Tipo de filme\n2 - Gênero\n3 - Ano\n4 - Duração\n\n";
     cout << "********************************************\n\n";
 }
 
@@ -252,12 +290,12 @@ int main() {
     string line;
 
     getline(file,line);
-    int i = 0;
+    int j = 0;
     int ct = 0;
     Movie movie;
     vector<string> content;
     while(getline(file,line,'\t')){
-        if(i%8==0){
+        if(j%8==0){
             pair<string,string> separator = splitString(line);
             content.push_back(separator.first);
             if(separator.second != "")
@@ -265,15 +303,16 @@ int main() {
         }else{
             content.push_back(line);
         }
-        i++;
+        j++;
 
     }
 
     file.close();
 
-    pair<string, vector<Movie>> TitleType;
-    pair<string, vector<Movie>> genres;
-    pair<int, vector<Movie>> startYear;
+     vector<Movie> TitleType;
+     vector<Movie> genres;
+     vector<Movie> startYear;
+     vector<Movie> runTime;
 
     for(int i=0;i<396;i+=9){
         movie.tconst = content[i];
@@ -296,21 +335,65 @@ int main() {
         movie.duration = stoi(content[i+7]);
         movie.genres = content[i+8];
         // genres.push_back(movie.genres);
-        movieTable.push_back(movie);
-        genres.second.push_back(movie);
-        startYear.second.push_back(movie);
-        TitleType.second.push_back(movie);
+        // movieTable.push_back(movie);
+        genres.push_back(movie);
+        startYear.push_back(movie);
+        TitleType.push_back(movie);
+        runTime.push_back(movie);
     }
     content.clear();
 
-    sort(TitleType.second.begin(), TitleType.second.end(),compareTitleType);
-    sort(genres.second.begin(), genres.second.end(), compareGenres);
-    sort(startYear.second.begin(), startYear.second.end(), compareStartYear);
+    sort(TitleType.begin(), TitleType.end(),compareTitleType);
+    sort(genres.begin(), genres.end(), compareGenres);
+    sort(startYear.begin(), startYear.end(), compareStartYear);
+    sort(runTime.begin(), runTime.end(), compareRunTime);
 
     vector<Movie> resTitleType;
     vector<Movie> resGenres;
     vector<Movie> resStartYear;
-    vector<Movie> resultado;
+    vector<Movie> resRunTime;
+
+    // vector<pair<vector<string>,vector<Movie>>> movieParser;
+
+    vector<vector<pair<string,vector<Movie>>>> movieParser;
+
+    movieParser.resize(4);
+    movieParser[0].resize(1);
+    movieParser[1].resize(1);
+    movieParser[2].resize(1);
+    movieParser[3].resize(1);
+
+    int a=0,b=0,c=0,d=0;
+    for(int i=0; i<TitleType.size(); i++){
+        if(TitleType[i].titleType == movieParser[0][a].first){
+            movieParser[0][a].second.push_back(TitleType[i]);
+        }else{
+            movieParser[0].push_back(make_pair(TitleType[i].titleType,vector<Movie>{TitleType[i]}));
+            a++;
+        }if(genres[i].genres == movieParser[1][b].first){
+            movieParser[1][b].second.push_back(genres[i]);
+        }else{
+            movieParser[1].push_back(make_pair(genres[i].genres,vector<Movie>{genres[i]}));
+            b++;
+        }if(to_string(startYear[i].startYear) == movieParser[2][c].first){
+            movieParser[2][c].second.push_back(startYear[i]);
+        }else{
+            movieParser[2].push_back(make_pair(to_string(startYear[i].startYear),vector<Movie>{startYear[i]}));
+            c++;
+        }if(to_string(runTime[i].duration) == movieParser[3][d].first){
+            movieParser[3][d].second.push_back(runTime[i]);
+        }else{
+            movieParser[3].push_back(make_pair(to_string(runTime[i].duration),vector<Movie>{runTime[i]}));
+            d++;
+        }
+    }
+
+    vector<vector<Movie>> resultado;
+    vector<Movie> finalRes;
+    resultado.push_back(resTitleType);
+    resultado.push_back(resGenres);
+    resultado.push_back(resStartYear);
+    resultado.push_back(resRunTime);
 
     string input;
     for(;;){
@@ -329,8 +412,8 @@ int main() {
                     input.append(addMore);
                 }
             }
-            moviesConsult(TitleType.second,genres.second,startYear.second,resTitleType,resGenres,resStartYear,input);
-            printResult(resTitleType,resGenres,resStartYear,resultado);
+            movieConsulter(movieParser,resultado,input);
+            printResult(finalRes,resultado,input);
             finalizar();
             cin >> input;
             if(input == "0")
@@ -339,7 +422,5 @@ int main() {
                 continue;
         }
     }
-
-
     return 0;
 }
