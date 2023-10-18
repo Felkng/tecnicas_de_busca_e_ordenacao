@@ -23,6 +23,15 @@ struct Movie {
     string genres;
 };
 
+struct Cinema {
+    string cinema_ID;
+    string cinema_name;
+    int cord_X;
+    int cord_Y;
+    float price_ticket;
+    vector<Movie> movies;
+};
+
 //função auxiliar para tratar a leitura de dados separados por '\n' ao invés de '\t'
 pair<string, string> splitString(const string& input) {
     // Encontrar a posição do primeiro caractere de nova linha
@@ -242,6 +251,11 @@ void printResult(vector<Movie> finalRes, vector<vector<Movie>> &resultado, strin
     resultado[3].clear();
 }
 
+void removeCharacter(string &str, char charToRemove) {
+    str.erase(remove(str.begin(), str.end(), charToRemove), str.end());
+}
+
+
 void menu(){
     system("clear");
     cout << "********************************************\n\n";
@@ -342,11 +356,65 @@ int main() {
         runTime.push_back(movie);
     }
     content.clear();
+    file.close();
+
+    fileName = "cinemas.txt"; 
+    ifstream file2(fileName);
+    if (!file2.is_open()) {
+        cerr << "Failed to open file: " << fileName << endl;
+        return 1;
+    }
+    getline(file2,line);
+    j = 0;
+    vector<Cinema> cinemas;
+    while(getline(file2,line,',')){
+        if(line[0] == ' ')
+            line.erase(line.begin());
+        if(line.find("\n") != string::npos){
+            pair<string,string> aux = splitString(line);
+            content.push_back(aux.first);
+            content.push_back(aux.second);
+        }else
+            content.push_back(line);
+    }
+
+    Cinema cine;
+    for(int i=0, l=0; i<content.size(); i++){
+        if(l==0){
+            cine.cinema_ID = content[i];
+            l++;
+        }else if(l==1){
+            cine.cinema_name = content[i];
+            l++;
+        }else if(l==2){
+            cine.cord_X = stoi(content[i]);
+            l++;
+        }else if(l==3){
+            cine.cord_Y = stoi(content[i]);
+            l++;
+        }else if(l==4){
+            cine.price_ticket = stof(content[i]);
+            l++;
+        }else if(l==5){
+            l=0;
+            while(content[i].find("tt") != content[i].npos){
+                Movie m;
+                m.tconst = content[i];
+                cine.movies.push_back(m);
+                i++;
+            }
+            i--;
+            cinemas.push_back(cine);
+        }
+    }
+    file2.close();
+
 
     sort(TitleType.begin(), TitleType.end(),compareTitleType);
     sort(genres.begin(), genres.end(), compareGenres);
     sort(startYear.begin(), startYear.end(), compareStartYear);
     sort(runTime.begin(), runTime.end(), compareRunTime);
+
 
     vector<Movie> resTitleType;
     vector<Movie> resGenres;
