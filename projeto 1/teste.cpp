@@ -272,22 +272,49 @@ void yearQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<v
 }
 //Faz as Queries de duration
 void durationQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<vector<Movie>> &result){
-    int valueRunTime;
+    int valueRunTimeStart, valueRunTimeEnd;
     int pos;
-    cout << "\n\nQual intervalo de tempo de duração você procura? \n";
-    cin >> valueRunTime;
+    cout << "\n\nQual intervalo de tempo de duração você procura? \nfilmes de: ";
+    // cin >> valueRunTime;
+    cin >> valueRunTimeStart;
+    cout << "\naté filmes de:";
+    cin >> valueRunTimeEnd;
+    int finalPos;
+    // pos = binarySearchMoviesString(movieParser[2],valueRunTimeStart,0,movieParser[2].size()-1);
     auto start_time = chrono::high_resolution_clock::now();
-    pos = binarySearchMoviesInt(movieParser[3],valueRunTime,0,movieParser[3].size()-1);
-    if(pos != -1){
-        unionMovies(movieParser[3],result[3],pos);
-        auto end_time = chrono::high_resolution_clock::now();
-        auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-        cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+    for(int i=1, j=1; j < movieParser[2].size(); j++){
+        if(stoi(movieParser[3][i].first) >= valueRunTimeStart){
+            pos=i;
+        }else{
+            i++;
+        }
+        if(valueRunTimeEnd >= stoi(movieParser[3][j].first)){
+            finalPos = j;
+        }else{
+            break;
+        }
     }
-    start_time = chrono::high_resolution_clock::now();
-    sort(result[3].begin(),result[3].end(),compareIds);
+    // finalPos = binarySearchMoviesString(movieParser[2],valueRunTimeEnd,0,movieParser[2].size()-1);
+    for(int i=pos; i<finalPos; i++){
+        if(i != -1){
+            unionMovies(movieParser[3],result[3],i);
+        }
+    }
     auto end_time = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    cout << "\nTempo para carregar os dados: " << elapsed_time << "segundos\n";
+    // auto start_time = chrono::high_resolution_clock::now();
+    // pos = binarySearchMoviesInt(movieParser[3],valueRunTime,0,movieParser[3].size()-1);
+    // if(pos != -1){
+    //     unionMovies(movieParser[3],result[3],pos);
+    //     auto end_time = chrono::high_resolution_clock::now();
+    //     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    //     cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+    // }
+    start_time = chrono::high_resolution_clock::now();
+    sort(result[3].begin(),result[3].end(),compareIds);
+    end_time = chrono::high_resolution_clock::now();
+    elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
     cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
     
 }
