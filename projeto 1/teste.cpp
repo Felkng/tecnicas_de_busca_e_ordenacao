@@ -8,6 +8,7 @@
 #include <sstream>
 #include <regex>
 #include <iterator>
+#include <chrono>
 
 using namespace std;
 //estrutura de filmes
@@ -154,9 +155,14 @@ void titleTypeQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
         if(choice == 1){
             cout << "\n\nQual/quais TitleType deseja procurar? \n";
             cin >> valueTitleType;
+            auto start_time = chrono::high_resolution_clock::now();
             pos = binarySearchMoviesString(movieParser[0],valueTitleType,0,movieParser[0].size()-1);
-            if(pos != -1)
+            if(pos != -1){
                 unionMovies(movieParser[0],result[0],pos);
+                auto end_time = chrono::high_resolution_clock::now();
+                auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+                cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+            }
         }else{
             break;
         }
@@ -165,7 +171,11 @@ void titleTypeQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
         cin >> choice;
     }
     // parserVectorMovie(valueTitleType,titleType,resTitleType,1, especify);
+    auto start_time = chrono::high_resolution_clock::now();
     sort(result[0].begin(),result[0].end(),compareIds);
+    auto end_time = chrono::high_resolution_clock::now();
+    auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
 }
 //Faz as Queries de Genres
 void genresQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<vector<Movie>> &result){
@@ -176,9 +186,14 @@ void genresQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector
         if(choice == 1){
             cout << "\n\nQual/quais Gênero deseja procurar? \n";
             cin >> valueGenres;
+            auto start_time = chrono::high_resolution_clock::now();
             pos = binarySearchMoviesString(movieParser[1],valueGenres,0,movieParser[1].size()-1);
-            if(pos != -1)
+            if(pos != -1){
                 unionMovies(movieParser[1],result[1],pos);
+                auto end_time = chrono::high_resolution_clock::now();
+                auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+                cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+            }
         }else{
             break;
         }
@@ -187,7 +202,11 @@ void genresQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector
         cin >> choice;
     }
     // parserVectorMovie(valueGenres,genres,resGenres,2, especify);
+    auto start_time = chrono::high_resolution_clock::now();
     sort(result[1].begin(),result[1].end(),compareIds);
+    auto end_time = chrono::high_resolution_clock::now();
+    auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
 }
 //Faz as Queries de startYear
 void yearQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<vector<Movie>> &result){
@@ -199,11 +218,20 @@ void yearQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<v
     if(choice == 1){
         cout << "\n\nQual ano?\n\n";
         cin >> valueStartYear;
+        auto start_time = chrono::high_resolution_clock::now();
         pos = binarySearchMoviesString(movieParser[2],valueStartYear,0,movieParser[2].size()-1);
-        if(pos != -1)
+        if(pos != -1){
             unionMovies(movieParser[2],result[2],pos);
+            auto end_time = chrono::high_resolution_clock::now();
+            auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+            cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+        }
         // parserVectorMovie(valueStartYear,startYear,resStartYear,3,especify);
+        start_time = chrono::high_resolution_clock::now();
         sort(result[2].begin(),result[2].end(),compareIds);
+        auto end_time = chrono::high_resolution_clock::now();
+        auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+        cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
     }else{
         cout << "\n\nAno de lançamento: \n\n";
         cin >> valueStartYear;
@@ -211,6 +239,7 @@ void yearQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<v
         cin >> valueEndYear;
         int finalPos;
         // pos = binarySearchMoviesString(movieParser[2],valueStartYear,0,movieParser[2].size()-1);
+        auto start_time = chrono::high_resolution_clock::now();
         for(int i=0, j=0; j < movieParser[2].size(); j++){
             if(movieParser[2][i].first >= valueStartYear){
                 pos=i;
@@ -225,12 +254,20 @@ void yearQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<v
         }
         // finalPos = binarySearchMoviesString(movieParser[2],valueEndYear,0,movieParser[2].size()-1);
         for(int i=pos; i<finalPos; i++){
-            if(i != -1)
+            if(i != -1){
                 unionMovies(movieParser[2],result[2],i);
+            }
         }
+        auto end_time = chrono::high_resolution_clock::now();
+        auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+        cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
         // especify = valueEndYear;
         // parserVectorMovie(valueStartYear,startYear,resStartYear,3,especify);
+        start_time = chrono::high_resolution_clock::now();
         sort(result[2].begin(),result[2].end(),compareIds);
+        end_time = chrono::high_resolution_clock::now();
+        elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+        cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
     }
 }
 //Faz as Queries de duration
@@ -239,10 +276,19 @@ void durationQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vect
     int pos;
     cout << "\n\nQual intervalo de tempo de duração você procura? \n";
     cin >> valueRunTime;
+    auto start_time = chrono::high_resolution_clock::now();
     pos = binarySearchMoviesInt(movieParser[3],valueRunTime,0,movieParser[3].size()-1);
-    if(pos != -1)
+    if(pos != -1){
         unionMovies(movieParser[3],result[3],pos);
+        auto end_time = chrono::high_resolution_clock::now();
+        auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+        cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+    }
+    start_time = chrono::high_resolution_clock::now();
     sort(result[3].begin(),result[3].end(),compareIds);
+    auto end_time = chrono::high_resolution_clock::now();
+    auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
     
 }
 
@@ -266,6 +312,7 @@ void movieConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
 //Imprime a interseção, se houver, dos filmes procurados
 void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado, string input){
     int ctVerify=0;
+    auto start_time = chrono::high_resolution_clock::now();
     if(input.find("1") != input.npos){
         intercesectionLinearMovie(resultado[0], resultado[0], finalRes);
         ctVerify++;
@@ -292,9 +339,12 @@ void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado,
         intercesectionLinearMovie(finalRes,resultado[3],finalRes);
     }
     cout << "\n\n";
+    auto end_time = chrono::high_resolution_clock::now();
     for(auto x : finalRes){
         cout << "tconst: " << x.tconst << " OriginalTitle: " << x.originalTitle << " StartYear: " << x.startYear << " endYear: " << x.endYear  << " TitleType: " << x.titleType << " Genres: " << x.genres << " Duração: " << x.duration <<"\n";
     }
+    auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    cout << "Tempo para fazer as interseções: " << elapsed_time << "segundos\n";
     cout << endl;
     resultado[0].clear();
     resultado[1].clear();
@@ -362,6 +412,7 @@ void intersectionLinearCinemas(vector<Cinema> a, vector<Cinema> b, vector<Cinema
 void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,vector<Cinema> &cinemas,vector<Cinema> finalResCine , vector<Movie> finalResMovies,vector<FilmesEmCartaz> &filmesEmCartazCrop, vector<FilmesEmCartaz> &filmesEmCartazCropRes,vector<vector<Movie>> &resultado, string input){
     int ctVerify=0;
     bool hasMovies = false;
+    auto start_time = chrono::high_resolution_clock::now();
     if(input.find("1") != input.npos){
         intercesectionLinearMovie(resultado[0], resultado[0], finalResMovies);
         ctVerify++;
@@ -394,6 +445,9 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
         hasMovies = true;
 
     }
+    auto end_time = chrono::high_resolution_clock::now();
+    auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    cout << "Tempo para fazer interseções dos filmes: " << elapsed_time << "segundos\n";
     resultado[0].clear();
     resultado[1].clear();
     resultado[2].clear();
@@ -427,11 +481,15 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
                 dist_vet.push_back(cinemas[i]);
             }
         }
+        start_time = chrono::high_resolution_clock::now();
         if(ctVerify > 0)
             intersectionLinearCinemas(finalResCine,dist_vet,finalResCine);
         else
             intersectionLinearCinemas(dist_vet,dist_vet,finalResCine);
         ctVerify++;
+        end_time = chrono::high_resolution_clock::now();
+        elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+        cout << "Tempo para fazer interseção com cinemas: " << elapsed_time << "segundos\n";
     }
 
     if(input.find("6") != input.npos){
@@ -449,10 +507,14 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
                 price_vet.push_back(cinemas[i]);
             }
         }
+        start_time = chrono::high_resolution_clock::now();
         if(ctVerify > 0)
             intersectionLinearCinemas(finalResCine,price_vet,finalResCine);
         else
             intersectionLinearCinemas(price_vet,price_vet,finalResCine);
+        end_time = chrono::high_resolution_clock::now();
+        elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+        cout << "Tempo para fazer interseção com cinemas: " << elapsed_time << "segundos\n";
     }
 
     cout << "\n\n";
@@ -475,7 +537,7 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
 }
 
 void menu(){
-    system("clear");
+    // system("clear");
     cout << "********************************************\n\n";
     cout << "Qual consulta deseja realizar? \n\n";
     cout << "1 - Filmes \n2 - Cinemas\n\n";
@@ -526,6 +588,7 @@ void menuCinemas(){
 
 
 int main() {
+    auto start_time = chrono::high_resolution_clock::now();
     string fileName = "filmesCrop.txt"; // Change to your file name
 
     ifstream file(fileName);
@@ -656,7 +719,6 @@ int main() {
         }
     }
     content.clear();
-
     sort(emCartazCrop.begin(),emCartazCrop.end(),compareIdsMovieCartaz);
 
     vector<Movie> resTitleType;
@@ -710,6 +772,11 @@ int main() {
     resultado.push_back(resRunTime);
 
     string input;
+
+    auto end_time = chrono::high_resolution_clock::now();
+    auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    cout << "Tempo para carregar os dados: " << elapsed_time << " segundos\n";
+
     for(;;){
         menu();
         cin >> input;
