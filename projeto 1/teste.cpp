@@ -10,7 +10,7 @@
 #include <iterator>
 
 using namespace std;
-
+//estrutura de filmes
 struct Movie {
     string tconst;
     string titleType;
@@ -22,7 +22,7 @@ struct Movie {
     int duration;
     string genres;
 };
-
+//estrutura de cinema
 struct Cinema {
     string cinema_ID;
     string cinema_name;
@@ -31,7 +31,7 @@ struct Cinema {
     float price_ticket;
     vector<Movie> movies;
 };
-
+//estrutura que atribue uma relação de filme para cinema
 struct FilmesEmCartaz {
     string cinema_ID;
     Movie filme;
@@ -82,8 +82,8 @@ bool compareRunTime(const Movie &a, const Movie &b){
     return a.duration < b.duration;
 }
 
+//função para usar de parâmetro na ordenação de FilmesEmCartaz
 bool compareIdsMovieCartaz(const FilmesEmCartaz &a, const FilmesEmCartaz &b){
-    
     return a.filme.tconst < b.filme.tconst;
 }
 
@@ -119,6 +119,7 @@ int binarySearchMoviesString(const vector<pair<string,vector<Movie>>> & arr, str
     return -1;
 }
 
+//binarySearchMoviesUsandoInteiros
 int binarySearchMoviesInt(const vector<pair<string,vector<Movie>>> & arr, int target, int left, int right) {
     if (left <= right) {
         int mid = left + (right - left) / 2;
@@ -131,6 +132,11 @@ int binarySearchMoviesInt(const vector<pair<string,vector<Movie>>> & arr, int ta
         }
     }
     return -1;
+}
+
+int distancia2pts(int x1, int y1, int x2, int y2){
+    int dist = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+    return dist;
 }
 
 //Faz a uinião dos filmes em uma mesma coluna
@@ -211,14 +217,13 @@ void yearQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<v
             }else{
                 i++;
             }
-            if(movieParser[2][i].first <= valueEndYear){
+            if(valueEndYear >= movieParser[2][j].first){
                 finalPos = j;
             }else{
                 break;
             }
         }
         // finalPos = binarySearchMoviesString(movieParser[2],valueEndYear,0,movieParser[2].size()-1);
-        cout << "------ " << pos << "---------" << finalPos;
         for(int i=pos; i<finalPos; i++){
             if(i != -1)
                 unionMovies(movieParser[2],result[2],i);
@@ -297,8 +302,8 @@ void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado,
     resultado[3].clear();
 }
 
-
-void cineConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser,vector<Cinema> &cinemas, vector<vector<Movie>> &result ,string input){
+//Faz a consulta dos cinemas de 1 ou mais colunas ao mesmo tempo
+void cineConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser,vector<Cinema> &cinemas, vector<vector<Movie>> &result, vector<Cinema> &resCine, string input){
     cout << "\n---" << input << "---" << endl;
     if(input.find("1") != input.npos){
         titleTypeQuery(movieParser, result);
@@ -314,7 +319,7 @@ void cineConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser,vecto
     }
 }
 
-
+//Faz a interseção linear de FilmesEmCartaz
 void intersectionLinearEmCartaz(vector<Movie> finalResMovies,vector<FilmesEmCartaz> filmesEmCartazCrop, vector<FilmesEmCartaz> &res){
     res.clear();
     for(int a=0,b=0; a < finalResMovies.size() && b < filmesEmCartazCrop.size();){
@@ -338,12 +343,29 @@ void intersectionLinearEmCartaz(vector<Movie> finalResMovies,vector<FilmesEmCart
     }
 }
 
+void intersectionLinearCinemas(vector<Cinema> a, vector<Cinema> b, vector<Cinema> &res){
+    res.clear();
+    for(int i=0, j=0; i < a.size() && j < b.size() ; ){
+        if(a[i].cinema_ID == b[j].cinema_ID){
+            res.push_back(a[i]);
+            i++;
+            j++;
+        }else if(a[i].cinema_ID < b[j].cinema_ID){
+            i++;
+        }else{
+            j++;
+        }
+    }
+}
 
+//Imprime os cinemas encontrados utilizando as interseções das queries
 void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,vector<Cinema> &cinemas,vector<Cinema> finalResCine , vector<Movie> finalResMovies,vector<FilmesEmCartaz> &filmesEmCartazCrop, vector<FilmesEmCartaz> &filmesEmCartazCropRes,vector<vector<Movie>> &resultado, string input){
     int ctVerify=0;
+    bool hasMovies = false;
     if(input.find("1") != input.npos){
         intercesectionLinearMovie(resultado[0], resultado[0], finalResMovies);
         ctVerify++;
+        hasMovies = true;
     }
     if(input.find("2") != input.npos){
         if(ctVerify == 0){
@@ -351,6 +373,8 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
             ctVerify++;
         }
         intercesectionLinearMovie(finalResMovies, resultado[1], finalResMovies);
+        hasMovies = true;
+
     }
     if(input.find("3") != input.npos){
         if(ctVerify == 0){
@@ -358,6 +382,8 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
             ctVerify++;
         }
         intercesectionLinearMovie(finalResMovies,resultado[2],finalResMovies);
+        hasMovies = true;
+
     }
     if(input.find("4") != input.npos){
         if(ctVerify == 0){
@@ -365,17 +391,17 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
             ctVerify++;
         }
         intercesectionLinearMovie(finalResMovies,resultado[3],finalResMovies);
+        hasMovies = true;
+
     }
     resultado[0].clear();
     resultado[1].clear();
     resultado[2].clear();
     resultado[3].clear();
 
-   
-
     if(ctVerify > 0)
         intersectionLinearEmCartaz(finalResMovies,filmesEmCartazCrop,filmesEmCartazCropRes);
-    finalResCine.resize(399);
+    finalResCine.resize(cinemas.size());
     for(int i=0, pos=0; i < filmesEmCartazCropRes.size(); i++){
         string aux = filmesEmCartazCropRes[i].cinema_ID;
         removeCharacter(aux,'c');
@@ -383,18 +409,70 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
         finalResCine[pos] = cinemas[pos];
         finalResCine[pos].movies.clear();
         finalResCine[pos].movies.push_back(filmesEmCartazCropRes[i].filme);
+    }
 
+    int x1=0,y1=0;
+    vector<Cinema> dist_vet,price_vet;
+     if(input.find("5") != input.npos){
+        int max=0, tam=cinemas.size();
+        cout << "\n\nQuais as suas coordenadas? ";
+        cout << "\nx: ";
+        cin >> x1;
+        cout <<"\ny: ";
+        cin >> y1;
+        cout << "\ndistância máxima: ";
+        cin >> max;
+        for(int i=0; i<tam; i++){
+            if(max >= distancia2pts(x1,y1,cinemas[i].cord_X,cinemas[i].cord_Y)){
+                dist_vet.push_back(cinemas[i]);
+            }
+        }
+        if(ctVerify > 0)
+            intersectionLinearCinemas(finalResCine,dist_vet,finalResCine);
+        else
+            intersectionLinearCinemas(dist_vet,dist_vet,finalResCine);
+        ctVerify++;
+    }
+
+    if(input.find("6") != input.npos){
+        int tam = cinemas.size();
+        float val=0.0;
+        string valS;
+        cout << "\n\nQual o valor máximo de ingresso que você está disposto(a) a pagar?\n";
+        cin >> valS;
+        if(valS.find(",") != string::npos){
+            valS.replace(valS.find(","),1,".");
+        }
+        val = stof(valS);
+        for(int i=0; i<tam; i++){
+            if(cinemas[i].price_ticket <= val){
+                price_vet.push_back(cinemas[i]);
+            }
+        }
+        if(ctVerify > 0)
+            intersectionLinearCinemas(finalResCine,price_vet,finalResCine);
+        else
+            intersectionLinearCinemas(price_vet,price_vet,finalResCine);
     }
 
     cout << "\n\n";
     for(auto x: finalResCine){
-        if(x.cinema_ID != "")
-            cout << x.cinema_ID << " " << x.cinema_name << " " << x.movies[0].titleType << " " << x.movies[0].genres << " " << x.movies[0].startYear << "\n";
+        if(x.cinema_ID != ""){
+            cout << "\n\n" << x.cinema_ID << ": " << x.cinema_name << ", Valor do ingresso: " << x.price_ticket << ", Distância: " << distancia2pts(x1,y1,x.cord_X,x.cord_Y);
+            cout << "\n\nFilmes: \n";
+            for(auto v:x.movies){
+                cout << v.tconst << ": ";
+                if(hasMovies){
+                    cout << v.originalTitle << ", Tipo de filme: " << v.titleType << ", Gênero: " << v.genres << ", Duração: " << v.duration << ", Ano de lançamento: " << v.startYear << "\n\n";
+                }
+            }
+        }
     }
+    dist_vet.clear();
+    price_vet.clear();
+    finalResCine.clear();
+    filmesEmCartazCropRes.clear();
 }
-
-
-
 
 void menu(){
     system("clear");
@@ -432,7 +510,7 @@ void menuMoreOneCine(){
 }
 
 void finalizar(){
-    cout << "********************************************\n\n";
+    cout << "\n\n********************************************\n\n";
     cout << "Algo mais?\n\n";
     cout << "0 - SAIR\n1 - Outra consulta\n\n";
     cout << "********************************************\n\n";
@@ -520,7 +598,7 @@ int main() {
         return 1;
     }
     getline(file2,line);
-    vector<Cinema> cinemas;
+    vector<Cinema> cinemas, resCine;
     vector<FilmesEmCartaz> emCartazCrop;
     while(getline(file2,line,',')){
         if(line[0] == ' ')
@@ -573,6 +651,7 @@ int main() {
                 i++;
             }
             cinemas.push_back(cine);
+            resCine.push_back(cine);
             i--;
         }
     }
@@ -619,6 +698,7 @@ int main() {
             d++;
         }
     }
+
 
     vector<vector<Movie>> resultado;
     vector<Movie> finalRes;
@@ -667,7 +747,7 @@ int main() {
                     input.append(addMore);
                 }
             }
-            cineConsulter(movieParser,cinemas,resultado,input);
+            cineConsulter(movieParser,cinemas,resultado, resCine,input);
             printResultCines(movieParser,cinemas,finalResCine,finalRes,emCartazCrop,cartazRes,resultado,input);
             finalizar();
             cin >> input;
