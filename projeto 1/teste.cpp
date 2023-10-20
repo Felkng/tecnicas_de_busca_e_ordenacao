@@ -178,7 +178,7 @@ void titleTypeQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
     cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
 }
 //Faz as Queries de Genres
-void genresQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<vector<Movie>> &result){
+void genresQuery(vector<vector<pair<string,vector<Movie>>>> movieParser, vector<vector<Movie>> &result){
     int choice=1;
     int pos=0;
     string valueGenres;
@@ -188,8 +188,10 @@ void genresQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector
             cin >> valueGenres;
             auto start_time = chrono::high_resolution_clock::now();
             for(int j=0; j<movieParser[1].size(); j++){
-                if(movieParser[1][j].first.find(valueGenres) != string::npos)
+                if(movieParser[1][j].first.find(valueGenres) != string::npos){
                     unionMovies(movieParser[1],result[1],j); //Se encontrar a categoria buscada faz uma união com o vetor resultado 
+                    movieParser[1][j].second.clear(); //limpa o conteúdo para evitar repetições
+                }
             }
             // pos = binarySearchMoviesString(movieParser[1],valueGenres,0,movieParser[1].size()-1); //Faz uma busca binária no vetor das categorias "Genres"
             // if(pos != -1){
