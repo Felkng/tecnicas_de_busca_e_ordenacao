@@ -287,7 +287,7 @@ void durationQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vect
             break;
         }
     }
-    for(int i=pos; i<finalPos; i++){
+    for(int i=pos; i<=finalPos; i++){
         if(i != -1){
             unionMovies(movieParser[3],result[3],i); //Faz a união de todos os vetores dentro do intervalo do limite inferior até o superior
         }
@@ -559,9 +559,9 @@ void menuCinemas(){
     cout << "********************************************\n\n";
 }
 
-
-int main() {
-    auto start_time = chrono::high_resolution_clock::now();
+//inicializa base de Movies
+int inicializaFilmes(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<vector<Movie>> &resultado, vector<Movie> &TitleType, vector<Movie> &genres, vector<Movie> &startYear, vector<Movie> &runTime){
+    // auto start_time = chrono::high_resolution_clock::now();
     string fileName = "filmesCrop.txt"; // Change to your file name
 
     ifstream file(fileName);
@@ -569,9 +569,7 @@ int main() {
         cerr << "Failed to open file: " << fileName << endl;
         return 1;
     }
-
     string line;
-
     getline(file,line);
     int j = 0;
     int ct = 0;
@@ -593,11 +591,7 @@ int main() {
 
     file.close();
 
-     vector<Movie> TitleType;
-     vector<Movie> genres;
-     vector<Movie> startYear;
-     vector<Movie> runTime;
-     vector<Movie> tconsts;
+    //  vector<Movie> TitleType,genres,startYear,runTime;
     //Guarda valores de content em vetores do tipo "Movie"
     for(int i=0;i<content.size();i+=9){
         movie.tconst = content[i];
@@ -624,16 +618,61 @@ int main() {
     }
     content.clear();
     file.close();
+    //Organiza vetores dos filmes
+    sort(TitleType.begin(), TitleType.end(),compareTitleType);
+    sort(genres.begin(), genres.end(), compareGenres);
+    sort(startYear.begin(), startYear.end(), compareStartYear);
+    sort(runTime.begin(), runTime.end(), compareRunTime);
 
-    fileName = "cinemas.txt"; 
+    vector<Movie> resTitleType,resGenres,resStartYear,resRunTime;
+
+    movieParser.resize(4);
+    movieParser[0].resize(1);
+    movieParser[1].resize(1);
+    movieParser[2].resize(1);
+    movieParser[3].resize(1);
+
+    //Salva e encapsula todos os valores dos vetores de filmes em movieParser que é um vetor de pares <string,vector<Movie>>
+    //onde a string é a categoria individual de cada vetor
+    int a=0,b=0,c=0,d=0;
+    for(int i=0; i<TitleType.size(); i++){
+        if(TitleType[i].titleType == movieParser[0][a].first){
+            movieParser[0][a].second.push_back(TitleType[i]);
+        }else{
+            movieParser[0].push_back(make_pair(TitleType[i].titleType,vector<Movie>{TitleType[i]}));
+            a++;
+        }if(genres[i].genres == movieParser[1][b].first){
+            movieParser[1][b].second.push_back(genres[i]);
+        }else{
+            movieParser[1].push_back(make_pair(genres[i].genres,vector<Movie>{genres[i]}));
+            b++;
+        }if(to_string(startYear[i].startYear) == movieParser[2][c].first){
+            movieParser[2][c].second.push_back(startYear[i]);
+        }else{
+            movieParser[2].push_back(make_pair(to_string(startYear[i].startYear),vector<Movie>{startYear[i]}));
+            c++;
+        }if(to_string(runTime[i].duration) == movieParser[3][d].first){
+            movieParser[3][d].second.push_back(runTime[i]);
+        }else{
+            movieParser[3].push_back(make_pair(to_string(runTime[i].duration),vector<Movie>{runTime[i]}));
+            d++;
+        }
+    }
+    resultado.resize(4);
+    return 0;
+}
+
+//inicializa base de Cinemas
+int inicializaCinemas(vector<Cinema> &cinemas,vector<Cinema> &resCine, vector<FilmesEmCartaz> &emCartazCrop){
+    string fileName = "cinemas.txt"; 
+    string line;
+    vector<string> content;
     ifstream file2(fileName);
     if (!file2.is_open()) {
         cerr << "Failed to open file: " << fileName << endl;
         return 1;
     }
     getline(file2,line);
-    vector<Cinema> cinemas, resCine;
-    vector<FilmesEmCartaz> emCartazCrop;
     //Ler arquivo de cinemas
     while(getline(file2,line,',')){
         if(line[0] == ' ')
@@ -646,13 +685,9 @@ int main() {
             content.push_back(line);
     }
     file2.close();
-
-    //Organiza vetores dos filmes
-    sort(TitleType.begin(), TitleType.end(),compareTitleType);
-    sort(genres.begin(), genres.end(), compareGenres);
-    sort(startYear.begin(), startYear.end(), compareStartYear);
-    sort(runTime.begin(), runTime.end(), compareRunTime);
+    
     Cinema cine;
+    // cout << content.size();
     for(int i=0, l=0; i<content.size(); i++){
         if(l==0){
             cine.cinema_ID = content[i];
@@ -694,64 +729,25 @@ int main() {
     content.clear();
     //Organiza EmCartazCrop em "ttconst"
     sort(emCartazCrop.begin(),emCartazCrop.end(),compareIdsMovieCartaz);
+    return 0;
+}
 
-    vector<Movie> resTitleType;
-    vector<Movie> resGenres;
-    vector<Movie> resStartYear;
-    vector<Movie> resRunTime;
-
+int main() {
+    vector<Movie> TitleType,genres,startYear,runTime;
     vector<vector<pair<string,vector<Movie>>>> movieParser;
-
-    movieParser.resize(4);
-    movieParser[0].resize(1);
-    movieParser[1].resize(1);
-    movieParser[2].resize(1);
-    movieParser[3].resize(1);
-
-    //Salva e encapsula todos os valores dos vetores de filmes em movieParser que é um vetor de pares <string,vector<Movie>>
-    //onde a string é a categoria individual de cada vetor
-    int a=0,b=0,c=0,d=0;
-    for(int i=0; i<TitleType.size(); i++){
-        if(TitleType[i].titleType == movieParser[0][a].first){
-            movieParser[0][a].second.push_back(TitleType[i]);
-        }else{
-            movieParser[0].push_back(make_pair(TitleType[i].titleType,vector<Movie>{TitleType[i]}));
-            a++;
-        }if(genres[i].genres == movieParser[1][b].first){
-            movieParser[1][b].second.push_back(genres[i]);
-        }else{
-            movieParser[1].push_back(make_pair(genres[i].genres,vector<Movie>{genres[i]}));
-            b++;
-        }if(to_string(startYear[i].startYear) == movieParser[2][c].first){
-            movieParser[2][c].second.push_back(startYear[i]);
-        }else{
-            movieParser[2].push_back(make_pair(to_string(startYear[i].startYear),vector<Movie>{startYear[i]}));
-            c++;
-        }if(to_string(runTime[i].duration) == movieParser[3][d].first){
-            movieParser[3][d].second.push_back(runTime[i]);
-        }else{
-            movieParser[3].push_back(make_pair(to_string(runTime[i].duration),vector<Movie>{runTime[i]}));
-            d++;
-        }
-    }
-    //POSSIVELMENTE LIMPAR VETORES CRIADOS ANTERIORMENTE
-
-
     vector<vector<Movie>> resultado;
     vector<Movie> finalRes;
     vector<Cinema> finalResCine;
     vector<FilmesEmCartaz> cartazRes;
-    resultado.push_back(resTitleType);
-    resultado.push_back(resGenres);
-    resultado.push_back(resStartYear);
-    resultado.push_back(resRunTime);
-
+    vector<Cinema> cinemas, resCine;
+    vector<FilmesEmCartaz> emCartazCrop;
+    auto start_time = chrono::high_resolution_clock::now();
+    inicializaFilmes(movieParser,resultado,TitleType,genres,startYear,runTime);
+    inicializaCinemas(cinemas, resCine, emCartazCrop);
     string input;
-
     auto end_time = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
     cout << "\nTempo para carregar os dados: " << elapsed_time << " segundos\n";
-
     for(;;){
         menu();
         cin >> input;
