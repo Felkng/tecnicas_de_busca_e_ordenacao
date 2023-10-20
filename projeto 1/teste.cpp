@@ -319,36 +319,53 @@ void movieConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
         durationQuery(movieParser,result);   
     }
 }
-
-//Imprime a interseção, se houver, dos filmes procurados
-void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado, string input){
+//Faz interseção multipla e filmes
+pair<bool,int> multiIntersectionMovies(vector<Movie> &finalRes, vector<vector<Movie>> &resultado, string input){
     int ctVerify=0; //variável auxiliar para confirmar que já houve interseção previamente ou não
-    auto start_time = chrono::high_resolution_clock::now();
+    bool hasMovies = false; //variável auxiliar para imprimir valores dos filmes caso haja alguma interseção com eles, pois o vetor de cinemas só possui o "tconst" originariamente
     if(input.find("1") != input.npos){
-        intercesectionLinearMovie(resultado[0], resultado[0], finalRes); //Faz a interseção de titleType com ele mesmo e armazena em "finalRes"
-        ctVerify++; 
+        intercesectionLinearMovie(resultado[0], resultado[0], finalRes); 
+        ctVerify++;
+        hasMovies = true;
     }
     if(input.find("2") != input.npos){
-        if(ctVerify == 0){ //Se não houver interseção previamente faz a interseção de "Genres" com ele mesmo e armazena em finalRes
+        if(ctVerify == 0){
             intercesectionLinearMovie(resultado[1], resultado[1], finalRes);
             ctVerify++;
         }
-        intercesectionLinearMovie(finalRes, resultado[1], finalRes); //Se já tiver interseção prévia, faz a interseção com o vetor resultado de "Genres" com o "finalRes" e atualiza o "finalRes"
+        intercesectionLinearMovie(finalRes, resultado[1], finalRes);
+        hasMovies = true;
+
     }
     if(input.find("3") != input.npos){
         if(ctVerify == 0){
-            intercesectionLinearMovie(resultado[2],resultado[2],finalRes);//Se não houver interseção previamente faz a interseção de "startYear" com ele mesmo e armazena em finalRes
+            intercesectionLinearMovie(resultado[2],resultado[2],finalRes);
             ctVerify++;
         }
-        intercesectionLinearMovie(finalRes,resultado[2],finalRes); //Se já tiver interseção prévia, faz a interseção com o vetor resultado de "startYear" com o "finalRes" e atualiza o "finalRes"
+        intercesectionLinearMovie(finalRes,resultado[2],finalRes);
+        hasMovies = true;
+
     }
     if(input.find("4") != input.npos){
         if(ctVerify == 0){
-            intercesectionLinearMovie(resultado[3],resultado[3],finalRes); //Se não houver interseção previamente faz a interseção de "duration" com ele mesmo e armazena em finalRes
+            intercesectionLinearMovie(resultado[3],resultado[3],finalRes);
             ctVerify++;
         }
-        intercesectionLinearMovie(finalRes,resultado[3],finalRes); //Se já tiver interseção prévia, faz a interseção com o vetor resultado de "duration" com o "finalRes" e atualiza o "finalRes"
+        intercesectionLinearMovie(finalRes,resultado[3],finalRes);
+        hasMovies = true;
+
     }
+    resultado[0].clear();
+    resultado[1].clear();
+    resultado[2].clear();
+    resultado[3].clear();
+    return make_pair(hasMovies,ctVerify);
+}
+
+//Imprime a interseção, se houver, dos filmes procurados
+void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado, string input){
+    auto start_time = chrono::high_resolution_clock::now();
+    multiIntersectionMovies(finalRes,resultado,input); //Faz a interseção de filmes
     cout << "\n\n";
     auto end_time = chrono::high_resolution_clock::now();
     for(auto x : finalRes){
@@ -357,29 +374,6 @@ void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado,
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
     cout << "Tempo para fazer as interseções: " << elapsed_time << "segundos\n";
     cout << endl;
-    //limpa vetores das queries
-    resultado[0].clear();
-    resultado[1].clear();
-    resultado[2].clear();
-    resultado[3].clear();
-}
-
-//INUTIL PODE SER SUBSTITUIDO POR "movieConsulter"
-//Faz a consulta dos cinemas de 1 ou mais colunas ao mesmo tempo
-void cineConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser,vector<Cinema> &cinemas, vector<vector<Movie>> &result, vector<Cinema> &resCine, string input){
-    cout << "\n---" << input << "---" << endl;
-    if(input.find("1") != input.npos){
-        titleTypeQuery(movieParser, result);
-    }
-    if(input.find("2") != input.npos){
-        genresQuery(movieParser,result);
-    }
-    if(input.find("3") != input.npos){
-        yearQuery(movieParser,result);
-    }
-    if(input.find("4") != input.npos){
-        durationQuery(movieParser,result);   
-    }
 }
 
 //Faz a interseção linear de FilmesEmCartaz
@@ -425,51 +419,13 @@ void intersectionLinearCinemas(vector<Cinema> a, vector<Cinema> b, vector<Cinema
 
 //Imprime os cinemas encontrados utilizando as interseções das queries
 void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,vector<Cinema> &cinemas,vector<Cinema> finalResCine , vector<Movie> finalResMovies,vector<FilmesEmCartaz> &filmesEmCartazCrop, vector<FilmesEmCartaz> &filmesEmCartazCropRes,vector<vector<Movie>> &resultado, string input){
-    int ctVerify=0; //variável auxiliar para confirmar que já houve interseção previamente ou não
-    bool hasMovies = false; //variável auxiliar para imprimir valores dos filmes caso haja alguma interseção com eles, pois o vetor de cinemas só possui o "tconst" originariamente
     auto start_time = chrono::high_resolution_clock::now();
-    if(input.find("1") != input.npos){
-        intercesectionLinearMovie(resultado[0], resultado[0], finalResMovies); 
-        ctVerify++;
-        hasMovies = true;
-    }
-    if(input.find("2") != input.npos){
-        if(ctVerify == 0){
-            intercesectionLinearMovie(resultado[1], resultado[1], finalResMovies);
-            ctVerify++;
-        }
-        intercesectionLinearMovie(finalResMovies, resultado[1], finalResMovies);
-        hasMovies = true;
-
-    }
-    if(input.find("3") != input.npos){
-        if(ctVerify == 0){
-            intercesectionLinearMovie(resultado[2],resultado[2],finalResMovies);
-            ctVerify++;
-        }
-        intercesectionLinearMovie(finalResMovies,resultado[2],finalResMovies);
-        hasMovies = true;
-
-    }
-    if(input.find("4") != input.npos){
-        if(ctVerify == 0){
-            intercesectionLinearMovie(resultado[3],resultado[3],finalResMovies);
-            ctVerify++;
-        }
-        intercesectionLinearMovie(finalResMovies,resultado[3],finalResMovies);
-        hasMovies = true;
-
-    }
+    pair<bool,int> hasMovies = multiIntersectionMovies(finalResMovies,resultado,input); //Faz interseção dos filmes
     auto end_time = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-    cout << "Tempo para fazer interseções dos filmes: " << elapsed_time << "segundos\n";
-    resultado[0].clear();
-    resultado[1].clear();
-    resultado[2].clear();
-    resultado[3].clear();
 
     //Originariamente filmesEmCartazCrop tem todos os ttconst pares de "cinemas"
-    if(ctVerify > 0) //Casa já tenha feito uma interseção antes, no caso com os filmes, ele faz a interseção dos filmes em cartaz com o vetor "finalResMovies" e armazena em Em "filmesEMCartazCropRes"
+    if(hasMovies.second > 0) //Casa já tenha feito uma interseção antes, no caso com os filmes, ele faz a interseção dos filmes em cartaz com o vetor "finalResMovies" e armazena em Em "filmesEMCartazCropRes"
         intersectionLinearEmCartaz(finalResMovies,filmesEmCartazCrop,filmesEmCartazCropRes);
     finalResCine.resize(cinemas.size());
     for(int i=0, pos=0; i < filmesEmCartazCropRes.size(); i++){
@@ -498,11 +454,11 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
             }
         }
         start_time = chrono::high_resolution_clock::now();
-        if(ctVerify > 0) //verifica Se já houve interseção anterioremente caso NÃO haja pega a interseção com ele mesmo e guarda em "finalResCine"
+        if(hasMovies.second > 0) //verifica Se já houve interseção anterioremente caso NÃO haja pega a interseção com ele mesmo e guarda em "finalResCine"
             intersectionLinearCinemas(finalResCine,dist_vet,finalResCine);
         else
             intersectionLinearCinemas(dist_vet,dist_vet,finalResCine);
-        ctVerify++;
+        hasMovies.second++;
         end_time = chrono::high_resolution_clock::now();
         elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
         cout << "Tempo para fazer interseção com cinemas: " << elapsed_time << "segundos\n";
@@ -524,7 +480,7 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
             }
         }
         start_time = chrono::high_resolution_clock::now();
-        if(ctVerify > 0) //verifica Se já houve interseção anterioremente caso NÃO haja pega a interseção com ele mesmo e guarda em "finalResCine"
+        if(hasMovies.second > 0) //verifica Se já houve interseção anterioremente caso NÃO haja pega a interseção com ele mesmo e guarda em "finalResCine"
             intersectionLinearCinemas(finalResCine,price_vet,finalResCine);
         else
             intersectionLinearCinemas(price_vet,price_vet,finalResCine);
@@ -540,7 +496,7 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
             cout << "\n\nFilmes: \n";
             for(auto v:x.movies){
                 cout << v.tconst << ": ";
-                if(hasMovies){ //Caso tenha feita interseção com filmes imprime os valores deles
+                if(hasMovies.first){ //Caso tenha feita interseção com filmes imprime os valores deles
                     cout << v.originalTitle << ", Tipo de filme: " << v.titleType << ", Gênero: " << v.genres << ", Duração: " << v.duration << ", Ano de lançamento: " << v.startYear << "\n\n";
                 }
             }
@@ -833,7 +789,7 @@ int main() {
                     input.append(addMore);
                 }
             }
-            cineConsulter(movieParser,cinemas,resultado, resCine,input); //Possivel trocar por movieConsulter
+            movieConsulter(movieParser,resultado,input);
             printResultCines(movieParser,cinemas,finalResCine,finalRes,emCartazCrop,cartazRes,resultado,input);
             finalizar();
             cin >> input;
