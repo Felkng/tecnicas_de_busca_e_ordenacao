@@ -187,13 +187,17 @@ void genresQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector
             cout << "\n\nQual/quais Gênero deseja procurar? \n";
             cin >> valueGenres;
             auto start_time = chrono::high_resolution_clock::now();
-            pos = binarySearchMoviesString(movieParser[1],valueGenres,0,movieParser[1].size()-1); //Faz uma busca binária no vetor das categorias "Genres"
-            if(pos != -1){
-                unionMovies(movieParser[1],result[1],pos); //Se encontrar a categoria buscada faz uma união com o vetor resultado 
+            for(int j=0; j<movieParser[1].size(); j++){
+                if(movieParser[1][j].first.find(valueGenres) != string::npos)
+                    unionMovies(movieParser[1],result[1],j); //Se encontrar a categoria buscada faz uma união com o vetor resultado 
+            }
+            // pos = binarySearchMoviesString(movieParser[1],valueGenres,0,movieParser[1].size()-1); //Faz uma busca binária no vetor das categorias "Genres"
+            // if(pos != -1){
+                // unionMovies(movieParser[1],result[1],pos); //Se encontrar a categoria buscada faz uma união com o vetor resultado 
                 auto end_time = chrono::high_resolution_clock::now();
                 auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
                 cout << "\nTempo para carregar os dados: " << elapsed_time << "segundos\n";
-            }
+            // }
         }else{
             break;
         }
