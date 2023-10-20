@@ -57,8 +57,8 @@ pair<string, string> splitString(const string& input) {
     // Retornar as duas partes em um par de strings
     return make_pair(part1, part2);
 }
-
-void removeCharacter(string &str, char charToRemove) {
+//Apaga todos os caracteres determinados de uma string
+void removeCharacter(string &str, char charToRemove) { 
     str.erase(remove(str.begin(), str.end(), charToRemove), str.end());
 }
 
@@ -105,7 +105,7 @@ void intercesectionLinearMovie(vector<Movie> a, vector<Movie> b, vector<Movie> &
     }
 }
 
-//binarySearchMoviesStringDeMovies
+//Faz uma busca binária comparando strings, o array precisa ser um par de <string, T>
 int binarySearchMoviesString(const vector<pair<string,vector<Movie>>> & arr, string target, int left, int right) {
     if (left <= right) {
         int mid = left + (right - left) / 2;
@@ -120,7 +120,7 @@ int binarySearchMoviesString(const vector<pair<string,vector<Movie>>> & arr, str
     return -1;
 }
 
-//binarySearchMoviesUsandoInteiros
+//Faz uma busca binária comparando inteiros, o array precisa ser um par de <string, T>, mas é feito um stoi para transformar a primeira chave em inteiro
 int binarySearchMoviesInt(const vector<pair<string,vector<Movie>>> & arr, int target, int left, int right) {
     if (left <= right) {
         int mid = left + (right - left) / 2;
@@ -134,7 +134,7 @@ int binarySearchMoviesInt(const vector<pair<string,vector<Movie>>> & arr, int ta
     }
     return -1;
 }
-
+//função que faz a distância de dois pontos
 int distancia2pts(int x1, int y1, int x2, int y2){
     int dist = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
     return dist;
@@ -156,12 +156,12 @@ void titleTypeQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
             cout << "\n\nQual/quais TitleType deseja procurar? \n";
             cin >> valueTitleType;
             auto start_time = chrono::high_resolution_clock::now();
-            pos = binarySearchMoviesString(movieParser[0],valueTitleType,0,movieParser[0].size()-1);
+            pos = binarySearchMoviesString(movieParser[0],valueTitleType,0,movieParser[0].size()-1); //Faz uma busca binária no vetor das categorias "titleType"
             if(pos != -1){
-                unionMovies(movieParser[0],result[0],pos);
+                unionMovies(movieParser[0],result[0],pos); //Se encontrar a categoria buscada faz uma união com o vetor resultado 
                 auto end_time = chrono::high_resolution_clock::now();
                 auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-                cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+                cout << "\nTempo para carregar os dados: " << elapsed_time << "segundos\n";
             }
         }else{
             break;
@@ -172,7 +172,7 @@ void titleTypeQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
     }
     // parserVectorMovie(valueTitleType,titleType,resTitleType,1, especify);
     auto start_time = chrono::high_resolution_clock::now();
-    sort(result[0].begin(),result[0].end(),compareIds);
+    sort(result[0].begin(),result[0].end(),compareIds); //Organiza o resultado comparando os ttconsts
     auto end_time = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
     cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
@@ -187,12 +187,12 @@ void genresQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector
             cout << "\n\nQual/quais Gênero deseja procurar? \n";
             cin >> valueGenres;
             auto start_time = chrono::high_resolution_clock::now();
-            pos = binarySearchMoviesString(movieParser[1],valueGenres,0,movieParser[1].size()-1);
+            pos = binarySearchMoviesString(movieParser[1],valueGenres,0,movieParser[1].size()-1); //Faz uma busca binária no vetor das categorias "Genres"
             if(pos != -1){
-                unionMovies(movieParser[1],result[1],pos);
+                unionMovies(movieParser[1],result[1],pos); //Se encontrar a categoria buscada faz uma união com o vetor resultado 
                 auto end_time = chrono::high_resolution_clock::now();
                 auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-                cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+                cout << "\nTempo para carregar os dados: " << elapsed_time << "segundos\n";
             }
         }else{
             break;
@@ -201,9 +201,8 @@ void genresQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector
         cout << "1 - SIM\n\n2 - NÃO\n\n";
         cin >> choice;
     }
-    // parserVectorMovie(valueGenres,genres,resGenres,2, especify);
     auto start_time = chrono::high_resolution_clock::now();
-    sort(result[1].begin(),result[1].end(),compareIds);
+    sort(result[1].begin(),result[1].end(),compareIds); //Organiza o resultado comparando os ttconsts
     auto end_time = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
     cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
@@ -219,16 +218,15 @@ void yearQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<v
         cout << "\n\nQual ano?\n\n";
         cin >> valueStartYear;
         auto start_time = chrono::high_resolution_clock::now();
-        pos = binarySearchMoviesString(movieParser[2],valueStartYear,0,movieParser[2].size()-1);
+        pos = binarySearchMoviesString(movieParser[2],valueStartYear,0,movieParser[2].size()-1); //Faz uma busca binária no vetor das categorias "startYear"
         if(pos != -1){
-            unionMovies(movieParser[2],result[2],pos);
+            unionMovies(movieParser[2],result[2],pos); //Se encontrar a categoria buscada faz uma união com o vetor resultado
             auto end_time = chrono::high_resolution_clock::now();
             auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-            cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
+            cout << "\nTempo para carregar os dados: " << elapsed_time << "segundos\n";
         }
-        // parserVectorMovie(valueStartYear,startYear,resStartYear,3,especify);
         start_time = chrono::high_resolution_clock::now();
-        sort(result[2].begin(),result[2].end(),compareIds);
+        sort(result[2].begin(),result[2].end(),compareIds); //Organiza o resultado comparando os ttconsts
         auto end_time = chrono::high_resolution_clock::now();
         auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
         cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
@@ -238,33 +236,29 @@ void yearQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vector<v
         cout << "\n\nAno de término:\n\n";
         cin >> valueEndYear;
         int finalPos;
-        // pos = binarySearchMoviesString(movieParser[2],valueStartYear,0,movieParser[2].size()-1);
         auto start_time = chrono::high_resolution_clock::now();
         for(int i=0, j=0; j < movieParser[2].size(); j++){
-            if(movieParser[2][i].first >= valueStartYear){
+            if(movieParser[2][i].first >= valueStartYear){ //Encontra a primeira ocorrência de um valor dentro do intervalo no limite inferior
                 pos=i;
             }else{
                 i++;
             }
-            if(valueEndYear >= movieParser[2][j].first){
+            if(valueEndYear >= movieParser[2][j].first){ //Encontra a última ocorrÊncia de um valor dentro do intervalo no limite superior
                 finalPos = j;
             }else{
                 break;
             }
         }
-        // finalPos = binarySearchMoviesString(movieParser[2],valueEndYear,0,movieParser[2].size()-1);
         for(int i=pos; i<finalPos; i++){
             if(i != -1){
-                unionMovies(movieParser[2],result[2],i);
+                unionMovies(movieParser[2],result[2],i); //Faz a união de todos os vetores dentro do intervalo do limite inferior até o superior
             }
         }
         auto end_time = chrono::high_resolution_clock::now();
         auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-        cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
-        // especify = valueEndYear;
-        // parserVectorMovie(valueStartYear,startYear,resStartYear,3,especify);
+        cout << "\nTempo para carregar os dados: " << elapsed_time << "segundos\n";
         start_time = chrono::high_resolution_clock::now();
-        sort(result[2].begin(),result[2].end(),compareIds);
+        sort(result[2].begin(),result[2].end(),compareIds); //Organiza o resultado comparando os ttconsts
         end_time = chrono::high_resolution_clock::now();
         elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
         cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
@@ -275,44 +269,34 @@ void durationQuery(vector<vector<pair<string,vector<Movie>>>> &movieParser, vect
     int valueRunTimeStart, valueRunTimeEnd;
     int pos;
     cout << "\n\nQual intervalo de tempo de duração você procura? \nfilmes de: ";
-    // cin >> valueRunTime;
     cin >> valueRunTimeStart;
     cout << "\naté filmes de:";
     cin >> valueRunTimeEnd;
     int finalPos;
-    // pos = binarySearchMoviesString(movieParser[2],valueRunTimeStart,0,movieParser[2].size()-1);
     auto start_time = chrono::high_resolution_clock::now();
+    //i começando em 1 pq o primeiro espaço do vetor é uma string vazia que não é possível converter para inteiro
     for(int i=1, j=1; j < movieParser[2].size(); j++){
-        if(stoi(movieParser[3][i].first) >= valueRunTimeStart){
+        if(stoi(movieParser[3][i].first) >= valueRunTimeStart){ //Encontra a primeira ocorrência de um valor dentro do intervalo no limite inferior
             pos=i;
         }else{
             i++;
         }
-        if(valueRunTimeEnd >= stoi(movieParser[3][j].first)){
+        if(valueRunTimeEnd >= stoi(movieParser[3][j].first)){ //Encontra a última ocorrÊncia de um valor dentro do intervalo no limite superior
             finalPos = j;
         }else{
             break;
         }
     }
-    // finalPos = binarySearchMoviesString(movieParser[2],valueRunTimeEnd,0,movieParser[2].size()-1);
     for(int i=pos; i<finalPos; i++){
         if(i != -1){
-            unionMovies(movieParser[3],result[3],i);
+            unionMovies(movieParser[3],result[3],i); //Faz a união de todos os vetores dentro do intervalo do limite inferior até o superior
         }
     }
     auto end_time = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
     cout << "\nTempo para carregar os dados: " << elapsed_time << "segundos\n";
-    // auto start_time = chrono::high_resolution_clock::now();
-    // pos = binarySearchMoviesInt(movieParser[3],valueRunTime,0,movieParser[3].size()-1);
-    // if(pos != -1){
-    //     unionMovies(movieParser[3],result[3],pos);
-    //     auto end_time = chrono::high_resolution_clock::now();
-    //     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-    //     cout << "Tempo para carregar os dados: " << elapsed_time << "segundos\n";
-    // }
     start_time = chrono::high_resolution_clock::now();
-    sort(result[3].begin(),result[3].end(),compareIds);
+    sort(result[3].begin(),result[3].end(),compareIds); //Organiza o resultado comparando os ttconsts
     end_time = chrono::high_resolution_clock::now();
     elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
     cout << "\nTempo para organizar os dados: " << elapsed_time << "segundos\n";
@@ -338,32 +322,32 @@ void movieConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser, vec
 
 //Imprime a interseção, se houver, dos filmes procurados
 void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado, string input){
-    int ctVerify=0;
+    int ctVerify=0; //variável auxiliar para confirmar que já houve interseção previamente ou não
     auto start_time = chrono::high_resolution_clock::now();
     if(input.find("1") != input.npos){
-        intercesectionLinearMovie(resultado[0], resultado[0], finalRes);
-        ctVerify++;
+        intercesectionLinearMovie(resultado[0], resultado[0], finalRes); //Faz a interseção de titleType com ele mesmo e armazena em "finalRes"
+        ctVerify++; 
     }
     if(input.find("2") != input.npos){
-        if(ctVerify == 0){
+        if(ctVerify == 0){ //Se não houver interseção previamente faz a interseção de "Genres" com ele mesmo e armazena em finalRes
             intercesectionLinearMovie(resultado[1], resultado[1], finalRes);
             ctVerify++;
         }
-        intercesectionLinearMovie(finalRes, resultado[1], finalRes);
+        intercesectionLinearMovie(finalRes, resultado[1], finalRes); //Se já tiver interseção prévia, faz a interseção com o vetor resultado de "Genres" com o "finalRes" e atualiza o "finalRes"
     }
     if(input.find("3") != input.npos){
         if(ctVerify == 0){
-            intercesectionLinearMovie(resultado[2],resultado[2],finalRes);
+            intercesectionLinearMovie(resultado[2],resultado[2],finalRes);//Se não houver interseção previamente faz a interseção de "startYear" com ele mesmo e armazena em finalRes
             ctVerify++;
         }
-        intercesectionLinearMovie(finalRes,resultado[2],finalRes);
+        intercesectionLinearMovie(finalRes,resultado[2],finalRes); //Se já tiver interseção prévia, faz a interseção com o vetor resultado de "startYear" com o "finalRes" e atualiza o "finalRes"
     }
     if(input.find("4") != input.npos){
         if(ctVerify == 0){
-            intercesectionLinearMovie(resultado[3],resultado[3],finalRes);
+            intercesectionLinearMovie(resultado[3],resultado[3],finalRes); //Se não houver interseção previamente faz a interseção de "duration" com ele mesmo e armazena em finalRes
             ctVerify++;
         }
-        intercesectionLinearMovie(finalRes,resultado[3],finalRes);
+        intercesectionLinearMovie(finalRes,resultado[3],finalRes); //Se já tiver interseção prévia, faz a interseção com o vetor resultado de "duration" com o "finalRes" e atualiza o "finalRes"
     }
     cout << "\n\n";
     auto end_time = chrono::high_resolution_clock::now();
@@ -373,12 +357,14 @@ void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado,
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
     cout << "Tempo para fazer as interseções: " << elapsed_time << "segundos\n";
     cout << endl;
+    //limpa vetores das queries
     resultado[0].clear();
     resultado[1].clear();
     resultado[2].clear();
     resultado[3].clear();
 }
 
+//INUTIL PODE SER SUBSTITUIDO POR "movieConsulter"
 //Faz a consulta dos cinemas de 1 ou mais colunas ao mesmo tempo
 void cineConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser,vector<Cinema> &cinemas, vector<vector<Movie>> &result, vector<Cinema> &resCine, string input){
     cout << "\n---" << input << "---" << endl;
@@ -400,7 +386,8 @@ void cineConsulter(vector<vector<pair<string,vector<Movie>>>> &movieParser,vecto
 void intersectionLinearEmCartaz(vector<Movie> finalResMovies,vector<FilmesEmCartaz> filmesEmCartazCrop, vector<FilmesEmCartaz> &res){
     res.clear();
     for(int a=0,b=0; a < finalResMovies.size() && b < filmesEmCartazCrop.size();){
-        if(finalResMovies[a].tconst == filmesEmCartazCrop[b].filme.tconst){
+        if(finalResMovies[a].tconst == filmesEmCartazCrop[b].filme.tconst){ 
+            //Atribui os valores do filme no vetor de filmes em cartaz
             filmesEmCartazCrop[b].filme.duration = finalResMovies[a].duration;
             filmesEmCartazCrop[b].filme.endYear = finalResMovies[a].endYear;
             filmesEmCartazCrop[b].filme.genres = finalResMovies[a].genres;
@@ -420,6 +407,7 @@ void intersectionLinearEmCartaz(vector<Movie> finalResMovies,vector<FilmesEmCart
     }
 }
 
+//Faz a interseção linear de Cinemas
 void intersectionLinearCinemas(vector<Cinema> a, vector<Cinema> b, vector<Cinema> &res){
     res.clear();
     for(int i=0, j=0; i < a.size() && j < b.size() ; ){
@@ -437,11 +425,11 @@ void intersectionLinearCinemas(vector<Cinema> a, vector<Cinema> b, vector<Cinema
 
 //Imprime os cinemas encontrados utilizando as interseções das queries
 void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,vector<Cinema> &cinemas,vector<Cinema> finalResCine , vector<Movie> finalResMovies,vector<FilmesEmCartaz> &filmesEmCartazCrop, vector<FilmesEmCartaz> &filmesEmCartazCropRes,vector<vector<Movie>> &resultado, string input){
-    int ctVerify=0;
-    bool hasMovies = false;
+    int ctVerify=0; //variável auxiliar para confirmar que já houve interseção previamente ou não
+    bool hasMovies = false; //variável auxiliar para imprimir valores dos filmes caso haja alguma interseção com eles, pois o vetor de cinemas só possui o "tconst" originariamente
     auto start_time = chrono::high_resolution_clock::now();
     if(input.find("1") != input.npos){
-        intercesectionLinearMovie(resultado[0], resultado[0], finalResMovies);
+        intercesectionLinearMovie(resultado[0], resultado[0], finalResMovies); 
         ctVerify++;
         hasMovies = true;
     }
@@ -480,21 +468,22 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
     resultado[2].clear();
     resultado[3].clear();
 
-    if(ctVerify > 0)
+    //Originariamente filmesEmCartazCrop tem todos os ttconst pares de "cinemas"
+    if(ctVerify > 0) //Casa já tenha feito uma interseção antes, no caso com os filmes, ele faz a interseção dos filmes em cartaz com o vetor "finalResMovies" e armazena em Em "filmesEMCartazCropRes"
         intersectionLinearEmCartaz(finalResMovies,filmesEmCartazCrop,filmesEmCartazCropRes);
     finalResCine.resize(cinemas.size());
     for(int i=0, pos=0; i < filmesEmCartazCropRes.size(); i++){
         string aux = filmesEmCartazCropRes[i].cinema_ID;
         removeCharacter(aux,'c');
         pos = stoi(aux)-1;
-        finalResCine[pos] = cinemas[pos];
-        finalResCine[pos].movies.clear();
-        finalResCine[pos].movies.push_back(filmesEmCartazCropRes[i].filme);
+        finalResCine[pos] = cinemas[pos]; //acessa diretamente a posição de cinemas e finalResCine (Os 2 têm o mesmo tamanho então é possível esse hash)
+        finalResCine[pos].movies.clear(); //limpa o conteúdo de "movies" para guardar a interseção 
+        finalResCine[pos].movies.push_back(filmesEmCartazCropRes[i].filme); //Guarda os valores do "filmeEmCartazCropRes" em "finalResCine"
     }
 
     int x1=0,y1=0;
     vector<Cinema> dist_vet,price_vet;
-     if(input.find("5") != input.npos){
+     if(input.find("5") != input.npos){ //A consulta de distância é feita aqui e armazena os resultados em "dist_vet"
         int max=0, tam=cinemas.size();
         cout << "\n\nQuais as suas coordenadas? ";
         cout << "\nx: ";
@@ -504,12 +493,12 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
         cout << "\ndistância máxima: ";
         cin >> max;
         for(int i=0; i<tam; i++){
-            if(max >= distancia2pts(x1,y1,cinemas[i].cord_X,cinemas[i].cord_Y)){
+            if(max >= distancia2pts(x1,y1,cinemas[i].cord_X,cinemas[i].cord_Y)){ //Pega todos os cinemas que possuem distância menor ou igual à entrada
                 dist_vet.push_back(cinemas[i]);
             }
         }
         start_time = chrono::high_resolution_clock::now();
-        if(ctVerify > 0)
+        if(ctVerify > 0) //verifica Se já houve interseção anterioremente caso NÃO haja pega a interseção com ele mesmo e guarda em "finalResCine"
             intersectionLinearCinemas(finalResCine,dist_vet,finalResCine);
         else
             intersectionLinearCinemas(dist_vet,dist_vet,finalResCine);
@@ -519,23 +508,23 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
         cout << "Tempo para fazer interseção com cinemas: " << elapsed_time << "segundos\n";
     }
 
-    if(input.find("6") != input.npos){
+    if(input.find("6") != input.npos){ //A consulta de preços é feita aqui e armazena os resultados em "price_vet"
         int tam = cinemas.size();
         float val=0.0;
         string valS;
         cout << "\n\nQual o valor máximo de ingresso que você está disposto(a) a pagar?\n";
         cin >> valS;
-        if(valS.find(",") != string::npos){
+        if(valS.find(",") != string::npos){ //caso a entrada venha com "," ela é substituída por "."
             valS.replace(valS.find(","),1,".");
         }
         val = stof(valS);
         for(int i=0; i<tam; i++){
-            if(cinemas[i].price_ticket <= val){
+            if(cinemas[i].price_ticket <= val){ //Pega todos os cinemas que possuem preço menor ou igual à entrada
                 price_vet.push_back(cinemas[i]);
             }
         }
         start_time = chrono::high_resolution_clock::now();
-        if(ctVerify > 0)
+        if(ctVerify > 0) //verifica Se já houve interseção anterioremente caso NÃO haja pega a interseção com ele mesmo e guarda em "finalResCine"
             intersectionLinearCinemas(finalResCine,price_vet,finalResCine);
         else
             intersectionLinearCinemas(price_vet,price_vet,finalResCine);
@@ -545,18 +534,19 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
     }
 
     cout << "\n\n";
-    for(auto x: finalResCine){
+    for(auto x: finalResCine){ //Imprime cinemas
         if(x.cinema_ID != ""){
             cout << "\n\n" << x.cinema_ID << ": " << x.cinema_name << ", Valor do ingresso: " << x.price_ticket << ", Distância: " << distancia2pts(x1,y1,x.cord_X,x.cord_Y);
             cout << "\n\nFilmes: \n";
             for(auto v:x.movies){
                 cout << v.tconst << ": ";
-                if(hasMovies){
+                if(hasMovies){ //Caso tenha feita interseção com filmes imprime os valores deles
                     cout << v.originalTitle << ", Tipo de filme: " << v.titleType << ", Gênero: " << v.genres << ", Duração: " << v.duration << ", Ano de lançamento: " << v.startYear << "\n\n";
                 }
             }
         }
     }
+    //Limpa valores dos vetores utilizados
     dist_vet.clear();
     price_vet.clear();
     finalResCine.clear();
@@ -631,6 +621,7 @@ int main() {
     int ct = 0;
     Movie movie;
     vector<string> content;
+    //Ler arquivo de filmes
     while(getline(file,line,'\t')){
         if(j%8==0){
             pair<string,string> separator = splitString(line);
@@ -651,11 +642,10 @@ int main() {
      vector<Movie> startYear;
      vector<Movie> runTime;
      vector<Movie> tconsts;
-
+    //Guarda valores de content em vetores do tipo "Movie"
     for(int i=0;i<content.size();i+=9){
         movie.tconst = content[i];
         movie.titleType = content[i+1];
-        // TitleType.push_back(movie.titleType);
         movie.primaryTitle = content[i+2];
         movie.originalTitle = content[i+3];
         if(content[i+4] == "\\N")
@@ -664,7 +654,6 @@ int main() {
         if(content[i+5] == "\\N")
             content[i+5] = "-1";
         movie.startYear = stoi(content[i+5]);
-        // startYear.push_back(movie.startYear);
         if(content[i+6] == "\\N")
             content[i+6] = "-1";
         movie.endYear = stoi(content[i+6]);
@@ -672,7 +661,6 @@ int main() {
             content[i+7] = "-1";
         movie.duration = stoi(content[i+7]);
         movie.genres = content[i+8];
-        // genres.push_back(movie.genres);
         genres.push_back(movie);
         startYear.push_back(movie);
         TitleType.push_back(movie);
@@ -690,6 +678,7 @@ int main() {
     getline(file2,line);
     vector<Cinema> cinemas, resCine;
     vector<FilmesEmCartaz> emCartazCrop;
+    //Ler arquivo de cinemas
     while(getline(file2,line,',')){
         if(line[0] == ' ')
             line.erase(line.begin());
@@ -702,6 +691,7 @@ int main() {
     }
     file2.close();
 
+    //Organiza vetores dos filmes
     sort(TitleType.begin(), TitleType.end(),compareTitleType);
     sort(genres.begin(), genres.end(), compareGenres);
     sort(startYear.begin(), startYear.end(), compareStartYear);
@@ -733,7 +723,7 @@ int main() {
                 cine.movies.push_back(m);
                 aux = m.tconst;
                 removeCharacter(aux,'t');
-                if(stoi(aux)%2==0){
+                if(stoi(aux)%2==0){ //Guarda os ttconsts pares no vetor "emCartazCrop" pois todos os filmes de filmesCrop.txt têm ttconst pares
                     a.filme = m;
                     a.cinema_ID = cine.cinema_ID;
                     emCartazCrop.push_back(a);
@@ -746,14 +736,13 @@ int main() {
         }
     }
     content.clear();
+    //Organiza EmCartazCrop em "ttconst"
     sort(emCartazCrop.begin(),emCartazCrop.end(),compareIdsMovieCartaz);
 
     vector<Movie> resTitleType;
     vector<Movie> resGenres;
     vector<Movie> resStartYear;
     vector<Movie> resRunTime;
-
-    // vector<pair<vector<string>,vector<Movie>>> movieParser;
 
     vector<vector<pair<string,vector<Movie>>>> movieParser;
 
@@ -763,6 +752,8 @@ int main() {
     movieParser[2].resize(1);
     movieParser[3].resize(1);
 
+    //Salva e encapsula todos os valores dos vetores de filmes em movieParser que é um vetor de pares <string,vector<Movie>>
+    //onde a string é a categoria individual de cada vetor
     int a=0,b=0,c=0,d=0;
     for(int i=0; i<TitleType.size(); i++){
         if(TitleType[i].titleType == movieParser[0][a].first){
@@ -787,6 +778,7 @@ int main() {
             d++;
         }
     }
+    //POSSIVELMENTE LIMPAR VETORES CRIADOS ANTERIORMENTE
 
 
     vector<vector<Movie>> resultado;
@@ -802,7 +794,7 @@ int main() {
 
     auto end_time = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-    cout << "Tempo para carregar os dados: " << elapsed_time << " segundos\n";
+    cout << "\nTempo para carregar os dados: " << elapsed_time << " segundos\n";
 
     for(;;){
         menu();
@@ -841,7 +833,7 @@ int main() {
                     input.append(addMore);
                 }
             }
-            cineConsulter(movieParser,cinemas,resultado, resCine,input);
+            cineConsulter(movieParser,cinemas,resultado, resCine,input); //Possivel trocar por movieConsulter
             printResultCines(movieParser,cinemas,finalResCine,finalRes,emCartazCrop,cartazRes,resultado,input);
             finalizar();
             cin >> input;
