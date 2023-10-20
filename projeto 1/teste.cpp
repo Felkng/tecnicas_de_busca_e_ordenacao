@@ -379,21 +379,18 @@ void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado,
 //Faz a interseção linear de FilmesEmCartaz
 void intersectionLinearEmCartaz(vector<Movie> finalResMovies,vector<FilmesEmCartaz> filmesEmCartazCrop, vector<FilmesEmCartaz> &res){
     res.clear();
+    string aux1, aux2;
     for(int a=0,b=0; a < finalResMovies.size() && b < filmesEmCartazCrop.size();){
-        if(finalResMovies[a].tconst == filmesEmCartazCrop[b].filme.tconst){ 
-            //Atribui os valores do filme no vetor de filmes em cartaz
-            filmesEmCartazCrop[b].filme.duration = finalResMovies[a].duration;
-            filmesEmCartazCrop[b].filme.endYear = finalResMovies[a].endYear;
-            filmesEmCartazCrop[b].filme.genres = finalResMovies[a].genres;
-            filmesEmCartazCrop[b].filme.isAdult = finalResMovies[a].isAdult;
-            filmesEmCartazCrop[b].filme.originalTitle = finalResMovies[a].originalTitle;
-            filmesEmCartazCrop[b].filme.primaryTitle = finalResMovies[a].primaryTitle;
-            filmesEmCartazCrop[b].filme.startYear = finalResMovies[a].startYear;
-            filmesEmCartazCrop[b].filme.titleType = finalResMovies[a].titleType;
+        aux1 = filmesEmCartazCrop[b].filme.tconst;
+        aux2 = finalResMovies[a].tconst;
+        removeCharacter(aux1,'t');
+        removeCharacter(aux2,'t');
+        if(stoi(aux1) == stoi(aux2)){ //Gambiarra pra consertar bug
+            filmesEmCartazCrop[b].filme = finalResMovies[a];
             res.push_back(filmesEmCartazCrop[b]);
             a++;
             b++;
-        }else if(finalResMovies[a].tconst < filmesEmCartazCrop[b].filme.tconst){
+        }else if(stoi(aux1) > stoi(aux2)){
             a++;
         }else{
             b++;
@@ -424,16 +421,21 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
     auto end_time = chrono::high_resolution_clock::now();
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
 
-    //Originariamente filmesEmCartazCrop tem todos os ttconst pares de "cinemas"
-    if(hasMovies.second > 0) //Casa já tenha feito uma interseção antes, no caso com os filmes, ele faz a interseção dos filmes em cartaz com o vetor "finalResMovies" e armazena em Em "filmesEMCartazCropRes"
+    //Originariamente filmesEmCartazCrop tem todos os ttconst PARES de "cinemas"
+    if(hasMovies.second > 0){//Cas0 já tenha feito uma interseção antes, no caso com os filmes, ele faz a interseção dos filmes em cartaz com o vetor "finalResMovies" e armazena em Em "filmesEMCartazCropRes"
         intersectionLinearEmCartaz(finalResMovies,filmesEmCartazCrop,filmesEmCartazCropRes);
+    } 
     finalResCine.resize(cinemas.size());
     for(int i=0, pos=0; i < filmesEmCartazCropRes.size(); i++){
         string aux = filmesEmCartazCropRes[i].cinema_ID;
         removeCharacter(aux,'c');
         pos = stoi(aux)-1;
-        finalResCine[pos] = cinemas[pos]; //acessa diretamente a posição de cinemas e finalResCine (Os 2 têm o mesmo tamanho então é possível esse hash)
-        finalResCine[pos].movies.clear(); //limpa o conteúdo de "movies" para guardar a interseção 
+        finalResCine[pos].cinema_ID = cinemas[pos].cinema_ID; //acessa diretamente a posição de cinemas e finalResCine (Os 2 têm o mesmo tamanho então é possível esse hash)
+        finalResCine[pos].cinema_name = cinemas[pos].cinema_name;
+        finalResCine[pos].cord_X = cinemas[pos].cord_X;
+        finalResCine[pos].cord_Y = cinemas[pos].cord_Y;
+        finalResCine[pos].price_ticket = cinemas[pos].price_ticket;
+        // finalResCine[pos].movies.clear(); //limpa o conteúdo de "movies" para guardar a interseção 
         finalResCine[pos].movies.push_back(filmesEmCartazCropRes[i].filme); //Guarda os valores do "filmeEmCartazCropRes" em "finalResCine"
     }
 
@@ -486,22 +488,22 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
             intersectionLinearCinemas(price_vet,price_vet,finalResCine);
         end_time = chrono::high_resolution_clock::now();
         elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
-        cout << "Tempo para fazer interseção com cinemas: " << elapsed_time << "segundos\n";
     }
 
     cout << "\n\n";
     for(auto x: finalResCine){ //Imprime cinemas
         if(x.cinema_ID != ""){
             cout << "\n\n" << x.cinema_ID << ": " << x.cinema_name << ", Valor do ingresso: " << x.price_ticket << ", Distância: " << distancia2pts(x1,y1,x.cord_X,x.cord_Y);
-            cout << "\n\nFilmes: \n";
+            cout << "\nFilmes:\n";
             for(auto v:x.movies){
-                cout << v.tconst << ": ";
+                cout << v.tconst << " ";
                 if(hasMovies.first){ //Caso tenha feita interseção com filmes imprime os valores deles
-                    cout << v.originalTitle << ", Tipo de filme: " << v.titleType << ", Gênero: " << v.genres << ", Duração: " << v.duration << ", Ano de lançamento: " << v.startYear << "\n\n";
+                    cout << "\n->" << v.originalTitle << ", Tipo de filme: " << v.titleType << ", Gênero: " << v.genres << ", Duração: " << v.duration << ", Ano de lançamento: " << v.startYear << "\n\n";
                 }
             }
         }
     }
+    cout << "\nTempo para fazer interseção com cinemas: " << elapsed_time << "segundos\n";
     //Limpa valores dos vetores utilizados
     dist_vet.clear();
     price_vet.clear();
