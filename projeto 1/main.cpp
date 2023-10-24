@@ -373,11 +373,19 @@ void printResultMovies(vector<Movie> finalRes, vector<vector<Movie>> &resultado,
     auto start_time = chrono::high_resolution_clock::now();
     multiIntersectionMovies(finalRes,resultado,input); //Faz a interseção de filmes
     cout << "\n\n";
+    ofstream outputFile("filmeSaida.txt");
+    
+    streambuf* coutBuffer = cout.rdbuf();  
+    cout.rdbuf(outputFile.rdbuf());  
+    
     auto end_time = chrono::high_resolution_clock::now();
     for(auto x : finalRes){
-        cout << "tconst: " << x.tconst << " OriginalTitle: " << x.originalTitle << " StartYear: " << x.startYear << " endYear: " << x.endYear  << " TitleType: " << x.titleType << " Genres: " << x.genres << " Duração: " << x.duration <<"\n";
+        cout << "tconst: " << x.tconst << " OriginalTitle: " << x.originalTitle << " StartYear: " << x.startYear << " endYear: " << x.endYear  << " TitleType: " << x.titleType << " Genres: " << x.genres << " Duração: " << x.duration << " Adulto: " << (x.isAdult ? "sim" : "não") << "\n";
     }
     auto elapsed_time = chrono::duration_cast<chrono::nanoseconds>(end_time - start_time).count() / 1e9;
+    cout.rdbuf(coutBuffer);
+
+    outputFile.close();
     cout << "Tempo para fazer as interseções: " << elapsed_time << "segundos\n";
     cout << endl;
 }
@@ -497,6 +505,12 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
     }
 
     cout << "\n\n";
+    std::ofstream outputFile("cinemaSaida.txt");
+    
+    std::streambuf* coutBuffer = std::cout.rdbuf();
+    std::cout.rdbuf(outputFile.rdbuf());
+
+    
     for(auto x: finalResCine){ //Imprime cinemas
         if(x.cinema_ID != ""){
             cout << "\n\n" << x.cinema_ID << ": " << x.cinema_name << ", Valor do ingresso: " << x.price_ticket << ", Distância: " << distancia2pts(x1,y1,x.cord_X,x.cord_Y);
@@ -509,6 +523,8 @@ void printResultCines(vector<vector<pair<string,vector<Movie>>>> &movieParser,ve
             }
         }
     }
+    std::cout.rdbuf(coutBuffer);
+    outputFile.close();
     cout << "\nTempo para fazer interseção com cinemas: " << elapsed_time << "segundos\n";
     //Limpa valores dos vetores utilizados
     dist_vet.clear();
